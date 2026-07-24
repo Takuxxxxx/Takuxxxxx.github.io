@@ -54,7 +54,7 @@ function wrapFadeIn(html) {
     });
   }
 
-  function router() {
+  async function router() {
     const hash = location.hash || '#works';
     updateActiveNav(hash);
     const [page, ...rest] = hash.replace('#', '').split('/');
@@ -64,7 +64,7 @@ function wrapFadeIn(html) {
 
     switch (page) {
       case 'works': renderWorks(app); break;
-      case 'work': renderWorkDetail(app, rest[0]); break;
+      case 'work': await renderWorkDetail(app, rest[0]); break;
       case 'contact': renderContact(app); break;
       case 'admin': renderAdmin(app); break;
       default: renderNotFound(app);
@@ -117,6 +117,27 @@ function renderWorks(app) {
       ${isAdmin ? '<button class="fab" onclick="showAddModal()" title="作品を追加">+</button>' : ''}
     </div>
   `);
+  updateCardThumbnails();
+}
+
+async function updateCardThumbnails() {
+  for (const p of data.projects) {
+    if (p.thumbnail || autoThumb(p)) continue;
+    const url = p.links && p.links[0] ? p.links[0].url : '';
+    const xMatch = url.match(/(?:x\.com|twitter\.com)\/(\w+)\/status\/(\d+)/i);
+    if (!xMatch) continue;
+    try {
+      const r = await fetch(`https://api.vxtwitter.com/${xMatch[1]}/status/${xMatch[2]}`);
+      if (r.ok) {
+        const tweet = await r.json();
+        const thumbUrl = tweet.media_extended?.[0]?.thumbnail_url;
+        if (thumbUrl) {
+          const card = document.querySelector(`.work-card[href="#work/${encodeURIComponent(p.id)}"] .work-card-thumb`);
+          if (card) card.innerHTML = `<img src="${escapeHtml(thumbUrl)}" alt="" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">`;
+        }
+      }
+    } catch {}
+  }
 }
 
 function autoThumb(p) {
@@ -156,10 +177,14 @@ function videoEmbed(url) {
   if (url.match(/\.(mp4|webm|ogg)(\?|$)/i)) {
     return `<div class="video-wrapper"><video src="${escapeHtml(url)}" controls playsinline style="width:100%;border-radius:var(--radius-md)"></video></div>`;
   }
+  const xMatch = url.match(/(?:x\.com|twitter\.com)\/(\w+)\/status\/(\d+)/i);
+  if (xMatch) {
+    return { type: 'x', username: xMatch[1], id: xMatch[2] };
+  }
   return '';
 }
 
-function renderWorkDetail(app, id) {
+async function renderWorkDetail(app, id) {
   const p = data.projects.find(proj => proj.id === id);
   if (!p) return renderNotFound(app);
 
@@ -169,11 +194,16 @@ function renderWorkDetail(app, id) {
   const saved = JSON.parse(localStorage.getItem(ADMIN_KEY) || '{}');
   const isDetailAdmin = saved.token && saved.repo;
 
-  let previewHtml = videoEmbed(previewUrl) || videoEmbed(linkUrl);
-  if (!previewHtml && thumbUrl) {
+  const ve = videoEmbed(previewUrl) || videoEmbed(linkUrl);
+
+  let previewHtml;
+  if (typeof ve === 'string') {
+    previewHtml = ve;
+  } else if (ve && ve.type === 'x') {
+    previewHtml = `<div class="work-detail-thumb" id="xPreview"><span>${p.emoji || '🎬'}</span></div>`;
+  } else if (thumbUrl) {
     previewHtml = `<div class="work-detail-thumb" style="overflow:hidden"><img src="${escapeHtml(thumbUrl)}" alt="" style="width:100%;height:100%;object-fit:cover"></div>`;
-  }
-  if (!previewHtml) {
+  } else {
     previewHtml = `<div class="work-detail-thumb"><span>${p.emoji || '🎬'}</span></div>`;
   }
 
@@ -215,6 +245,28 @@ function renderWorkDetail(app, id) {
       </div>
     </div>
   `);
+
+  if (ve && ve.type === 'x') {
+    try {
+      const r = await fetch(`https://api.vxtwitter.com/${ve.username}/status/${ve.id}`);
+      if (r.ok) {
+        const tweet = await r.json();
+        if (tweet.media_extended && tweet.media_extended.length) {
+          const media = tweet.media_extended[0];
+          let xPreviewHtml;
+          if (media.type === 'video' || media.type === 'gif') {
+            xPreviewHtml = `<div class="video-wrapper"><video src="${escapeHtml(media.url)}" controls playsinline style="width:100%;border-radius:var(--radius-md)" poster="${escapeHtml(media.thumbnail_url || '')}"></video></div>`;
+          } else if (media.thumbnail_url) {
+            xPreviewHtml = `<div class="work-detail-thumb" style="overflow:hidden"><img src="${escapeHtml(media.thumbnail_url)}" alt="" style="width:100%;height:100%;object-fit:cover"></div>`;
+          }
+          if (xPreviewHtml) {
+            const el = document.getElementById('xPreview');
+            if (el) el.outerHTML = xPreviewHtml;
+          }
+        }
+      }
+    } catch {}
+  }
 }
 
 function renderContact(app) {
