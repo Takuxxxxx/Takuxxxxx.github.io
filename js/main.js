@@ -371,6 +371,7 @@ function renderNotFound(app) {
 }
 
 function renderAdmin(app) {
+  showLoginModal();
   location.hash = '#works';
 }
 
