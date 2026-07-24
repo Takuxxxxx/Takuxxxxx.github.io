@@ -96,8 +96,18 @@ function renderHome(app) {
           <a href="#contact" class="btn btn-outline">SNS</a>
         </div>
       </div>
-    </section>
+    </div>
   `);
+  loadTwitterEmbeds();
+}
+
+async function loadTwitterEmbeds() {
+  if (!document.querySelector('.twitter-embed-wrap')) return;
+  if (typeof twttr !== 'undefined') { twttr.widgets.load(); return; }
+  const s = document.createElement('script');
+  s.src = 'https://platform.twitter.com/widgets.js';
+  s.async = true;
+  document.head.appendChild(s);
 }
 
 function renderWorks(app) {
@@ -141,6 +151,10 @@ function videoEmbed(url) {
   const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]+)/);
   if (ytMatch) {
     return `<div class="video-wrapper"><iframe src="https://www.youtube.com/embed/${ytMatch[1]}" frameborder="0" allowfullscreen></iframe></div>`;
+  }
+  const xMatch = url.match(/(?:x\.com|twitter\.com)\/\w+\/status\/(\d+)/i);
+  if (xMatch) {
+    return `<div class="twitter-embed-wrap"><blockquote class="twitter-tweet" data-dnt="true"><a href="https://twitter.com/i/status/${xMatch[1]}"></a></blockquote></div>`;
   }
   if (url.match(/\.(mp4|webm|ogg)(\?|$)/i)) {
     return `<div class="video-wrapper"><video src="${escapeHtml(url)}" controls playsinline style="width:100%;border-radius:var(--radius-md)"></video></div>`;
