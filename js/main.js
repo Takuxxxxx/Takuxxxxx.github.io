@@ -136,6 +136,18 @@ function projectCard(p) {
   `;
 }
 
+function videoEmbed(url) {
+  if (!url) return '';
+  const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]+)/);
+  if (ytMatch) {
+    return `<div class="video-wrapper"><iframe src="https://www.youtube.com/embed/${ytMatch[1]}" frameborder="0" allowfullscreen></iframe></div>`;
+  }
+  if (url.match(/\.(mp4|webm|ogg)(\?|$)/i)) {
+    return `<div class="video-wrapper"><video src="${escapeHtml(url)}" controls playsinline style="width:100%;border-radius:var(--radius-md)"></video></div>`;
+  }
+  return '';
+}
+
 function renderWorkDetail(app, id) {
   const p = data.projects.find(proj => proj.id === id);
   if (!p) return renderNotFound(app);
@@ -151,9 +163,7 @@ function renderWorkDetail(app, id) {
         </div>
         <div class="work-detail-meta">${p.date || ''}</div>
       </div>
-      <div class="work-detail-thumb">
-        <span>${p.emoji || '🎬'}</span>
-      </div>
+      ${videoEmbed(p.videoUrl) || `<div class="work-detail-thumb"><span>${p.emoji || '🎬'}</span></div>`}
       <div class="work-detail-glass">
         <div class="work-detail-section">
           <h2>About</h2>
@@ -367,6 +377,10 @@ function showEditModal(id) {
         <textarea id="aDetail" class="admin-input admin-textarea">${escapeHtml(p.details || p.description)}</textarea>
       </div>
       <div class="admin-field">
+        <label>動画URL（YouTube / mp4 など）</label>
+        <input type="text" id="aVideoUrl" class="admin-input" value="${escapeHtml(p.videoUrl || '')}" placeholder="https://youtube.com/watch?v=...">
+      </div>
+      <div class="admin-field">
         <label>リンク先URL</label>
         <input type="text" id="aLinkUrl" class="admin-input" value="${escapeHtml((p.links && p.links[0]) ? p.links[0].url : '')}">
       </div>
@@ -447,6 +461,7 @@ async function adminSubmitEdit(id) {
   const detail = document.getElementById('aDetail').value.trim() || desc;
   const linkUrl = document.getElementById('aLinkUrl').value.trim();
   const linkLabel = document.getElementById('aLinkLabel').value.trim();
+  const videoUrl = document.getElementById('aVideoUrl').value.trim();
   if (!title || !desc) { alert('タイトルと説明は必須です'); return; }
   const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
   const links = (linkUrl && linkLabel) ? [{ label: linkLabel, url: linkUrl }] : [];
@@ -454,6 +469,6 @@ async function adminSubmitEdit(id) {
   adminCommit((currentData) => {
     const idx = currentData.projects.findIndex(p => p.id === id);
     if (idx === -1) return;
-    currentData.projects[idx] = { ...currentData.projects[idx], title, description: desc, emoji, date, tags, details: detail, links };
+    currentData.projects[idx] = { ...currentData.projects[idx], title, description: desc, emoji, date, tags, details: detail, links, videoUrl: videoUrl || undefined };
   });
 }
