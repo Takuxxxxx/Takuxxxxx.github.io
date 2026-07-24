@@ -122,7 +122,7 @@ function renderWorks(app) {
 function autoThumb(p) {
   const url = p.videoUrl || (p.links && p.links[0] ? p.links[0].url : '');
   if (!url) return '';
-  const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+  const yt = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]+)/);
   if (yt) return `https://img.youtube.com/vi/${yt[1]}/maxresdefault.jpg`;
   return '';
 }
