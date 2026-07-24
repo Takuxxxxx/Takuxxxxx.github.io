@@ -75,15 +75,14 @@
     },
     {
       "id": "video-project-8",
-      "title": "てすと",
+      "title": "てすとa",
       "category": "video",
       "emoji": "🎬",
       "description": "てすと",
       "details": "てすと",
       "tags": [],
       "date": "2026-07",
-      "links": [],
-      "videoUrl": "https://www.youtube.com/watch?v=AfQzohIx6UA"
+      "links": []
     }
   ]
 }
