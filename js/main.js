@@ -28,8 +28,26 @@ function wrapFadeIn(html) {
 
 (async function init() {
   try {
-    const res = await fetch('projects.json');
-    data = await res.json();
+    const saved = JSON.parse(localStorage.getItem(ADMIN_KEY) || '{}');
+    let res;
+    if (saved.token && saved.repo) {
+      const r = await fetch(`https://api.github.com/repos/${saved.repo}/contents/projects.json`, {
+        headers: { Authorization: `token ${saved.token}` },
+      });
+      if (r.ok) {
+        const file = await r.json();
+        const raw = atob(file.content.replace(/\n/g, ''));
+        const bytes = new Uint8Array(raw.length);
+        for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
+        data = JSON.parse(new TextDecoder().decode(bytes));
+      } else {
+        res = await fetch('projects.json');
+        data = await res.json();
+      }
+    } else {
+      res = await fetch('projects.json');
+      data = await res.json();
+    }
   } catch {
     document.getElementById('app').innerHTML = '<div class="loading" style="color:var(--text-secondary);padding:80px 24px;text-align:center;">Failed to load data.</div>';
     return;
@@ -465,9 +483,9 @@ async function adminCommit(updateFn) {
     });
     if (!putR.ok) throw new Error('Commit failed');
 
-    status.textContent = '完了！';
-    status.style.color = 'var(--accent)';
-    setTimeout(() => location.reload(), 1500);
+    data = currentData;
+    closeModal();
+    router();
   } catch (e) {
     status.textContent = 'エラーが発生しました。トークンとリポジトリ設定を確認してください。';
     status.style.color = '#e53e3e';
