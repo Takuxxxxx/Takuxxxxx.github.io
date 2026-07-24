@@ -166,6 +166,8 @@ function renderWorkDetail(app, id) {
   const p = data.projects.find(proj => proj.id === id);
   if (!p) return renderNotFound(app);
 
+  const previewUrl = p.videoUrl || (p.links && p.links[0] ? p.links[0].url : '');
+
   app.innerHTML = wrapFadeIn(`
     <div class="work-detail">
       <a href="#works" class="work-detail-back">← Back to Works</a>
@@ -177,7 +179,7 @@ function renderWorkDetail(app, id) {
         </div>
         <div class="work-detail-meta">${p.date || ''}</div>
       </div>
-      ${videoEmbed(p.videoUrl) || `<div class="work-detail-thumb"><span>${p.emoji || '🎬'}</span></div>`}
+      ${videoEmbed(previewUrl) || `<div class="work-detail-thumb"><span>${p.emoji || '🎬'}</span></div>`}
       <div class="work-detail-glass">
         <div class="work-detail-section">
           <h2>About</h2>
