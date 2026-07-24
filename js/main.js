@@ -98,16 +98,7 @@ function renderHome(app) {
       </div>
     </div>
   `);
-  loadTwitterEmbeds();
-}
 
-async function loadTwitterEmbeds() {
-  if (!document.querySelector('.twitter-embed-wrap')) return;
-  if (typeof twttr !== 'undefined') { twttr.widgets.load(); return; }
-  const s = document.createElement('script');
-  s.src = 'https://platform.twitter.com/widgets.js';
-  s.async = true;
-  document.head.appendChild(s);
 }
 
 function renderWorks(app) {
@@ -162,10 +153,6 @@ function videoEmbed(url) {
   if (ytMatch) {
     return `<div class="video-wrapper"><iframe src="https://www.youtube.com/embed/${ytMatch[1]}" frameborder="0" allowfullscreen></iframe></div>`;
   }
-  const xMatch = url.match(/(?:x\.com|twitter\.com)\/\w+\/status\/(\d+)/i);
-  if (xMatch) {
-    return `<div class="twitter-embed-wrap"><blockquote class="twitter-tweet" data-dnt="true"><a href="https://twitter.com/i/status/${xMatch[1]}"></a></blockquote></div>`;
-  }
   if (url.match(/\.(mp4|webm|ogg)(\?|$)/i)) {
     return `<div class="video-wrapper"><video src="${escapeHtml(url)}" controls playsinline style="width:100%;border-radius:var(--radius-md)"></video></div>`;
   }
@@ -176,7 +163,17 @@ function renderWorkDetail(app, id) {
   const p = data.projects.find(proj => proj.id === id);
   if (!p) return renderNotFound(app);
 
-  const previewUrl = p.videoUrl || (p.links && p.links[0] ? p.links[0].url : '');
+  const previewUrl = p.videoUrl || '';
+  const linkUrl = p.links && p.links[0] ? p.links[0].url : '';
+  const thumbUrl = p.thumbnail || autoThumb(p);
+
+  let previewHtml = videoEmbed(previewUrl) || videoEmbed(linkUrl);
+  if (!previewHtml && thumbUrl) {
+    previewHtml = `<div class="work-detail-thumb" style="overflow:hidden"><img src="${escapeHtml(thumbUrl)}" alt="" style="width:100%;height:100%;object-fit:cover"></div>`;
+  }
+  if (!previewHtml) {
+    previewHtml = `<div class="work-detail-thumb"><span>${p.emoji || '🎬'}</span></div>`;
+  }
 
   app.innerHTML = wrapFadeIn(`
     <div class="work-detail">
@@ -189,7 +186,7 @@ function renderWorkDetail(app, id) {
         </div>
         <div class="work-detail-meta">${p.date || ''}</div>
       </div>
-      ${videoEmbed(previewUrl) || (p.thumbnail || autoThumb(p) ? `<div class="work-detail-thumb" style="overflow:hidden"><img src="${escapeHtml(p.thumbnail || autoThumb(p))}" alt="" style="width:100%;height:100%;object-fit:cover"></div>` : `<div class="work-detail-thumb"><span>${p.emoji || '🎬'}</span></div>`)}
+      ${previewHtml}
       <div class="work-detail-glass">
         <div class="work-detail-section">
           <h2>About</h2>
@@ -205,9 +202,12 @@ function renderWorkDetail(app, id) {
         <div class="work-detail-section">
           <h2>Links</h2>
           <div class="work-detail-links">
-            ${p.links.map(l =>
-              `<a href="${escapeHtml(l.url)}" target="_blank" rel="noopener" class="btn btn-primary">${escapeHtml(l.label)}</a>`
-            ).join('')}
+            ${p.links.map(l => {
+              let label = l.label;
+              if (l.url.match(/(?:x\.com|twitter\.com)/i)) label = 'X（Twitter）で見る';
+              else if (l.url.match(/youtube/)) label = 'YouTubeで見る';
+              return `<a href="${escapeHtml(l.url)}" target="_blank" rel="noopener" class="btn btn-primary">▶ ${escapeHtml(label)}</a>`;
+            }).join('')}
           </div>
         </div>` : ''}
       </div>
