@@ -351,6 +351,10 @@ function showAddModal() {
         <input type="text" id="aTitle" class="admin-input" placeholder="作品タイトル">
       </div>
       <div class="admin-field">
+        <label>動画URL（YouTube / mp4）</label>
+        <input type="text" id="aVideoUrl" class="admin-input" placeholder="https://youtube.com/watch?v=...">
+      </div>
+      <div class="admin-field">
         <label>リンクURL</label>
         <input type="text" id="aLinkUrl" class="admin-input" placeholder="https://x.com/...">
       </div>
@@ -461,9 +465,9 @@ async function adminCommit(updateFn) {
     });
     if (!putR.ok) throw new Error('Commit failed');
 
-    status.textContent = '完了！ 数分後に反映されます。';
+    status.textContent = '完了！';
     status.style.color = 'var(--accent)';
-    setTimeout(closeModal, 2000);
+    setTimeout(() => location.reload(), 1500);
   } catch (e) {
     status.textContent = 'エラーが発生しました。トークンとリポジトリ設定を確認してください。';
     status.style.color = '#e53e3e';
@@ -474,6 +478,7 @@ async function adminSubmit() {
   const title = document.getElementById('aTitle').value.trim();
   const linkUrl = document.getElementById('aLinkUrl').value.trim();
   const linkLabel = document.getElementById('aLinkLabel').value.trim();
+  const videoUrl = document.getElementById('aVideoUrl').value.trim();
   if (!title) { alert('タイトルは必須です'); return; }
   const links = (linkUrl && linkLabel) ? [{ label: linkLabel, url: linkUrl }] : [];
 
@@ -482,7 +487,7 @@ async function adminSubmit() {
       id: getNextProjectId(), title, category: 'video',
       emoji: '🎬', description: title,
       details: '', tags: [], date: new Date().toISOString().slice(0, 7),
-      links,
+      videoUrl: videoUrl || undefined, links,
     });
   });
 }
