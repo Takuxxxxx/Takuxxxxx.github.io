@@ -513,4 +513,4 @@ a { color: inherit; text-decoration: none; }
 }
 
 .btn:disabled { opacity: 0.5; cursor: wait; pointer-events: none; }
-.x-badge { display: inline-block; margin-top: 8px; font-size: 0.8rem; opacity: 0.4; }
+.twitter-embed-wrap { margin-bottom: 32px; display: flex; justify-content: center; min-height: 200px; }
