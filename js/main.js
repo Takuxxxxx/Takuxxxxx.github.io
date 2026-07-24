@@ -166,6 +166,8 @@ function renderWorkDetail(app, id) {
   const previewUrl = p.videoUrl || '';
   const linkUrl = p.links && p.links[0] ? p.links[0].url : '';
   const thumbUrl = p.thumbnail || autoThumb(p);
+  const saved = JSON.parse(localStorage.getItem(ADMIN_KEY) || '{}');
+  const isDetailAdmin = saved.token && saved.repo;
 
   let previewHtml = videoEmbed(previewUrl) || videoEmbed(linkUrl);
   if (!previewHtml && thumbUrl) {
@@ -182,7 +184,7 @@ function renderWorkDetail(app, id) {
         <div class="work-detail-cat">${escapeHtml(p.category)}</div>
         <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px">
           <h1 class="work-detail-title" style="margin-bottom:0">${escapeHtml(p.title)}</h1>
-          <button class="edit-btn" onclick="showEditModal('${p.id}')">✏️ 編集</button>
+          ${isDetailAdmin ? '<button class="edit-btn" onclick="showEditModal(\''+p.id+'\')">✏️ 編集</button>' : ''}
         </div>
         <div class="work-detail-meta">${p.date || ''}</div>
       </div>
