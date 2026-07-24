@@ -67,7 +67,7 @@ function wrapFadeIn(html) {
       case 'works': renderWorks(app); break;
       case 'work': renderWorkDetail(app, rest[0]); break;
       case 'contact': renderContact(app); break;
-
+      case 'admin': renderAdmin(app); break;
       default: renderNotFound(app);
     }
 
@@ -214,6 +214,11 @@ function renderNotFound(app) {
       <a href="#home" class="btn btn-primary">Homeに戻る</a>
     </div>
   `);
+}
+
+function renderAdmin(app) {
+  app.innerHTML = wrapFadeIn('<div style="min-height:60vh"></div>');
+  showAddModal();
 }
 
 /* Admin Modal */
