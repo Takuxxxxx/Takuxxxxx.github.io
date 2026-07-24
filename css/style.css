@@ -523,4 +523,3 @@ a { color: inherit; text-decoration: none; }
 }
 
 .btn:disabled { opacity: 0.5; cursor: wait; pointer-events: none; }
-.twitter-embed-wrap { margin-bottom: 32px; display: flex; justify-content: center; min-height: 200px; }

@@ -241,7 +241,7 @@ function videoEmbed(url) {
   }
   const xMatch = url.match(/(?:x\.com|twitter\.com)\/(\w+)\/status\/(\d+)/i);
   if (xMatch) {
-    return { type: 'x', url: `https://twitter.com/${xMatch[1]}/status/${xMatch[2]}` };
+    return { type: 'x', username: xMatch[1], id: xMatch[2], url: `https://twitter.com/${xMatch[1]}/status/${xMatch[2]}` };
   }
   return '';
 }
@@ -310,23 +310,23 @@ async function renderWorkDetail(app, id) {
 
   if (ve && ve.type === 'x') {
     const el = document.getElementById('xPreview');
-    let oembedOk = false;
     try {
-      const r = await fetch(`https://publish.twitter.com/oembed?url=${encodeURIComponent(ve.url)}&omit_script=true&dnt=true`);
+      const r = await fetch(`https://api.vxtwitter.com/${ve.username}/status/${ve.id}`);
       if (r.ok) {
-        const data = await r.json();
-        if (el) el.outerHTML = `<div class="twitter-embed-wrap" id="xPreview">${data.html}</div>`;
-        oembedOk = true;
-        if (typeof twttr !== 'undefined') { twttr.widgets.load(); }
-        else {
-          const s = document.createElement('script');
-          s.src = 'https://platform.twitter.com/widgets.js';
-          s.async = true;
-          document.head.appendChild(s);
+        const tweet = await r.json();
+        if (tweet.media_extended && tweet.media_extended.length) {
+          const media = tweet.media_extended[0];
+          let html;
+          if (media.type === 'video' || media.type === 'gif') {
+            html = `<div class="video-wrapper"><video src="${escapeHtml(media.url)}" controls playsinline style="width:100%;border-radius:var(--radius-md)" poster="${escapeHtml(media.thumbnail_url || '')}"></video></div>`;
+          } else if (media.thumbnail_url) {
+            html = `<div class="work-detail-thumb" style="overflow:hidden"><img src="${escapeHtml(media.thumbnail_url)}" alt="" style="width:100%;height:100%;object-fit:cover"></div>`;
+          }
+          if (html && el) el.outerHTML = html;
         }
       }
     } catch {}
-    if (!oembedOk && el && !el.querySelector('iframe, video, img')) {
+    if (el && !el.querySelector('video, img')) {
       el.outerHTML = `<a href="${escapeHtml(linkUrl)}" target="_blank" rel="noopener" class="btn btn-primary" style="display:flex;justify-content:center;padding:20px 24px;font-size:1.1rem;border-radius:var(--radius-md);text-decoration:none">X（Twitter）で見る</a>`;
     }
   }
