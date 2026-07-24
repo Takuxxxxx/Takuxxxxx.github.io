@@ -130,12 +130,32 @@ function enableBatchSelect() {
   selBox.className = 'sel-rect';
   const bar = document.createElement('div');
   bar.className = 'sel-bar';
-  bar.innerHTML = '<span class="sel-bar-count"></span><button class="sel-bar-del btn btn-primary" style="margin:0">まとめて削除</button>';
+  bar.innerHTML = '<span class="sel-bar-count"></span><input class="sel-bar-tags" placeholder="タグ(カンマ区切り)"><button class="sel-bar-tag-btn btn btn-outline" style="margin:0">タグ追加</button><button class="sel-bar-del btn btn-primary" style="margin:0">まとめて削除</button>';
   bar.querySelector('.sel-bar-del').onclick = () => {
     const ids = Array.from(document.querySelectorAll('.work-card.selected')).map(c => c.getAttribute('href')?.replace('#work/', '')).filter(Boolean);
     if (!ids.length || !confirm(`選択した${ids.length}件をすべて削除しますか？`)) return;
     adminCommit((currentData) => { currentData.projects = currentData.projects.filter(p => !ids.includes(p.id)); });
-    if (bar.parentNode) bar.parentNode.removeChild(bar);
+    clearSelection();
+  };
+  bar.querySelector('.sel-bar-tag-btn').onclick = () => {
+    const input = bar.querySelector('.sel-bar-tags');
+    const raw = input.value.trim();
+    if (!raw) return;
+    const newTags = raw.split(',').map(t => t.trim()).filter(Boolean);
+    if (!newTags.length) return;
+    const ids = Array.from(document.querySelectorAll('.work-card.selected')).map(c => c.getAttribute('href')?.replace('#work/', '')).filter(Boolean);
+    if (!ids.length) return;
+    input.value = '';
+    adminCommit((currentData) => {
+      ids.forEach(id => {
+        const p = currentData.projects.find(proj => proj.id === id);
+        if (!p) return;
+        const existing = new Set(p.tags || []);
+        newTags.forEach(t => existing.add(t));
+        p.tags = Array.from(existing);
+      });
+    });
+    clearSelection();
   };
 
   function updateBar() {
@@ -541,6 +561,10 @@ function showAddModal() {
         <label>リンクラベル</label>
         <input type="text" id="aLinkLabel" class="admin-input" placeholder="Xで見る">
       </div>
+      <div class="admin-field">
+        <label>タグ（カンマ区切り）</label>
+        <input type="text" id="aAddTags" class="admin-input" placeholder="例: FPS, 編集, 実況">
+      </div>
       <button onclick="adminSubmit()" id="submitBtn" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px">GitHub に追加</button>
       <p id="adminStatus" style="text-align:center;margin-top:12px;font-size:0.9rem;color:var(--text-secondary)"></p>
     </div>
@@ -673,8 +697,10 @@ async function adminSubmit() {
   const linkUrl = document.getElementById('aLinkUrl').value.trim();
   const linkLabel = document.getElementById('aLinkLabel').value.trim();
   const videoUrl = document.getElementById('aVideoUrl').value.trim();
+  const tagsRaw = document.getElementById('aAddTags').value.trim();
   if (!title) { alert('タイトルは必須です'); return; }
   const links = (linkUrl && linkLabel) ? [{ label: linkLabel, url: linkUrl }] : [];
+  const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
 
   const newId = getNextProjectId(data);
   _adminSubmitting = true;
@@ -684,7 +710,7 @@ async function adminSubmit() {
       currentData.projects.push({
         id: newId, title, category: 'video',
         emoji: '🎬', description: title,
-        details: '', tags: [], date: new Date().toISOString().slice(0, 7),
+        details: '', tags, date: new Date().toISOString().slice(0, 7),
         videoUrl: videoUrl || undefined, links,
       });
     });
