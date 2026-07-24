@@ -11,5 +11,17 @@
     "tiktok": "https://www.tiktok.com/@t4ku_vfx",
     "github": ""
   },
-  "projects": []
+  "projects": [
+    {
+      "id": "video-project-1",
+      "title": "aaaaaaa",
+      "category": "video",
+      "emoji": "🎬",
+      "description": "aaaaaaa",
+      "details": "",
+      "tags": [],
+      "date": "2026-07",
+      "links": []
+    }
+  ]
 }
