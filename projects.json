@@ -79,10 +79,11 @@
       "category": "video",
       "emoji": "🎬",
       "description": "てすと",
-      "details": "",
+      "details": "てすと",
       "tags": [],
       "date": "2026-07",
-      "links": []
+      "links": [],
+      "videoUrl": "https://www.youtube.com/watch?v=AfQzohIx6UA"
     }
   ]
 }
