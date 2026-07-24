@@ -481,6 +481,12 @@ a { color: inherit; text-decoration: none; }
   position: absolute; inset: 0;
   width: 100%; height: 100%;
 }
+.footer-admin-link {
+  text-decoration: none; opacity: 0.3; transition: opacity .2s;
+  margin-left: 4px;
+}
+.footer-admin-link:hover { opacity: 0.8; }
+
 /* Responsive */
 @media (max-width: 768px) {
   .menu-btn { display: flex; }
