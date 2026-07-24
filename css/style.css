@@ -243,6 +243,7 @@ a { color: inherit; text-decoration: none; }
   font-size: 2.5rem; position: relative; overflow: hidden;
 }
 .work-card-thumb .emoji { position: relative; z-index: 1; }
+.work-card-thumb img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
 
 .work-card-thumb::after {
   content: ''; position: absolute; inset: 0;

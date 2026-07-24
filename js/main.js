@@ -129,10 +129,11 @@ function renderWorks(app) {
 }
 
 function projectCard(p) {
+  const thumb = p.thumbnail ? `<img src="${escapeHtml(p.thumbnail)}" alt="" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">` : '';
   return `
     <a href="#work/${encodeURIComponent(p.id)}" class="work-card">
       <div class="work-card-thumb">
-        <span class="emoji">${p.emoji || '🎬'}</span>
+        ${thumb || `<span class="emoji">${p.emoji || '🎬'}</span>`}
       </div>
       <div class="work-card-body">
         <div class="work-card-cat">${escapeHtml(p.category)}</div>
@@ -179,7 +180,7 @@ function renderWorkDetail(app, id) {
         </div>
         <div class="work-detail-meta">${p.date || ''}</div>
       </div>
-      ${videoEmbed(previewUrl) || `<div class="work-detail-thumb"><span>${p.emoji || '🎬'}</span></div>`}
+      ${videoEmbed(previewUrl) || (p.thumbnail ? `<div class="work-detail-thumb" style="overflow:hidden"><img src="${escapeHtml(p.thumbnail)}" alt="" style="width:100%;height:100%;object-fit:cover"></div>` : `<div class="work-detail-thumb"><span>${p.emoji || '🎬'}</span></div>`)}
       <div class="work-detail-glass">
         <div class="work-detail-section">
           <h2>About</h2>
@@ -380,6 +381,10 @@ function showEditModal(id) {
           <input type="text" id="aEmoji" class="admin-input" value="${escapeHtml(p.emoji || '🎬')}" style="text-align:center;font-size:1.5rem">
         </div>
         <div class="admin-field" style="flex:2">
+          <label>サムネイル画像URL</label>
+          <input type="text" id="aThumb" class="admin-input" value="${escapeHtml(p.thumbnail || '')}" placeholder="https://...">
+        </div>
+        <div class="admin-field" style="flex:2">
           <label>日付</label>
           <input type="text" id="aDate" class="admin-input" value="${escapeHtml(p.date || '')}">
         </div>
@@ -481,6 +486,7 @@ async function adminSubmitEdit(id) {
   const linkUrl = document.getElementById('aLinkUrl').value.trim();
   const linkLabel = document.getElementById('aLinkLabel').value.trim();
   const videoUrl = document.getElementById('aVideoUrl').value.trim();
+  const thumbnail = document.getElementById('aThumb').value.trim();
   if (!title || !desc) { alert('タイトルと説明は必須です'); return; }
   const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
   const links = (linkUrl && linkLabel) ? [{ label: linkLabel, url: linkUrl }] : [];
@@ -488,7 +494,7 @@ async function adminSubmitEdit(id) {
   adminCommit((currentData) => {
     const idx = currentData.projects.findIndex(p => p.id === id);
     if (idx === -1) return;
-    currentData.projects[idx] = { ...currentData.projects[idx], title, description: desc, emoji, date, tags, details: detail, links, videoUrl: videoUrl || undefined };
+    currentData.projects[idx] = { ...currentData.projects[idx], title, description: desc, emoji, date, tags, details: detail, links, videoUrl: videoUrl || undefined, thumbnail: thumbnail || undefined };
   });
 }
 
