@@ -13,66 +13,6 @@
   },
   "projects": [
     {
-      "id": "video-project-1",
-      "title": "作品タイトル 1",
-      "category": "video",
-      "emoji": "🎬",
-      "description": "短い説明文をここに記載します。",
-      "details": "ここに作品の詳細な説明を書きます。\n使用した編集ソフトや、こだわったポイントなどを自由に記述してください。",
-      "tags": [
-        "Premiere Pro",
-        "After Effects",
-        "カット編集"
-      ],
-      "date": "2026-06",
-      "links": [
-        {
-          "label": "Xで見る",
-          "url": "https://x.com/yourhandle/status/xxxxxxxx"
-        }
-      ]
-    },
-    {
-      "id": "video-project-2",
-      "title": "作品タイトル 2",
-      "category": "video",
-      "emoji": "🎥",
-      "description": "こちらの作品は〇〇な動画です。",
-      "details": "編集のポイントや制作背景など、自由に書いてください。\n複数行のテキストもそのまま反映されます。",
-      "tags": [
-        "DaVinci Resolve",
-        "色調整",
-        "BGM編集"
-      ],
-      "date": "2026-05",
-      "links": [
-        {
-          "label": "Xで見る",
-          "url": "https://x.com/yourhandle/status/xxxxxxxx"
-        }
-      ]
-    },
-    {
-      "id": "video-project-3",
-      "title": "作品タイトル 3",
-      "category": "video",
-      "emoji": "✂️",
-      "description": "ショート動画編集作品です。",
-      "details": "TikTok / YouTube Shorts / X用のショート動画。\n縦横比やテンポ感を意識した編集をしています。",
-      "tags": [
-        "ショート動画",
-        "テロップ",
-        "BGM"
-      ],
-      "date": "2026-04",
-      "links": [
-        {
-          "label": "Xで見る",
-          "url": "https://x.com/yourhandle/status/xxxxxxxx"
-        }
-      ]
-    },
-    {
       "id": "video-project-4",
       "title": "Getaway Car",
       "category": "video",
