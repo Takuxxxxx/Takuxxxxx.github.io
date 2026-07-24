@@ -13,24 +13,6 @@
   },
   "projects": [
     {
-      "id": "yt-demo",
-      "title": "YouTubeデモ",
-      "category": "video",
-      "emoji": "▶️",
-      "description": "YouTubeリンクからの自動サムネイル + 再生デモ",
-      "details": "これはYouTubeリンクの作品例です。Works一覧ではサムネイルが自動表示され、詳細ページでは動画がそのまま再生できます。",
-      "tags": [
-        "デモ"
-      ],
-      "date": "2026-07",
-      "links": [
-        {
-          "label": "YouTubeで見る",
-          "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-        }
-      ]
-    },
-    {
       "id": "video-project-7",
       "title": "gegeg",
       "category": "video",
