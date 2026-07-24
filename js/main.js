@@ -406,6 +406,9 @@ function showEditModal(id) {
       </div>
       <button onclick="adminSubmitEdit('${id}')" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px">保存</button>
       <p id="adminStatus" style="text-align:center;margin-top:12px;font-size:0.9rem;color:var(--text-secondary)"></p>
+      <div style="text-align:center;margin-top:16px;padding-top:16px;border-top:1px solid rgba(0,0,0,0.06)">
+        <button onclick="adminDeleteProject('${id}')" style="background:none;border:none;color:#e53e3e;cursor:pointer;font-size:0.85rem;padding:8px">この作品を削除する</button>
+      </div>
     </div>
   `);
 }
@@ -486,5 +489,13 @@ async function adminSubmitEdit(id) {
     const idx = currentData.projects.findIndex(p => p.id === id);
     if (idx === -1) return;
     currentData.projects[idx] = { ...currentData.projects[idx], title, description: desc, emoji, date, tags, details: detail, links, videoUrl: videoUrl || undefined };
+  });
+}
+
+function adminDeleteProject(id) {
+  if (!confirm('この作品を削除しますか？')) return;
+  adminCommit((currentData) => {
+    currentData.projects = currentData.projects.filter(p => p.id !== id);
+    location.hash = '#works';
   });
 }
