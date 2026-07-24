@@ -211,6 +211,29 @@ a { color: inherit; text-decoration: none; }
 }
 .hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 
+/* Search Bar */
+.search-bar-wrap {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 24px; position: relative;
+}
+.search-bar {
+  flex: 1; padding: 10px 16px; border: 1px solid rgba(0,0,0,0.08);
+  border-radius: var(--radius-full); background: var(--glass);
+  backdrop-filter: blur(12px); font-size: 0.95rem; outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.search-bar:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(212,175,55,0.15); }
+.search-clear {
+  position: absolute; right: 12px; background: none; border: none;
+  cursor: pointer; font-size: 1rem; color: var(--text-tertiary);
+  padding: 4px 8px; border-radius: 50%; line-height: 1; display: none;
+}
+.search-clear:hover { color: var(--text-primary); background: rgba(0,0,0,0.05); }
+.search-none {
+  text-align: center; padding: 60px 24px; color: var(--text-secondary);
+  font-size: 0.95rem; display: none;
+}
+
 /* Works Grid */
 .works-grid {
   display: grid;

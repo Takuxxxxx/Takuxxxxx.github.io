@@ -111,14 +111,62 @@ function renderWorks(app) {
         <h1>Works</h1>
         <p>制作した動画作品一覧</p>
       </div>
+      <div class="search-bar-wrap">
+        <input class="search-bar" id="searchBar" type="text" placeholder="作品を検索..." autocomplete="off">
+        <button class="search-clear" id="searchClear">✕</button>
+      </div>
       <div class="works-grid">
         ${projects.map(projectCard).join('')}
       </div>
+      <div class="search-none" id="searchNone">該当する作品が見つかりませんでした</div>
       ${isAdmin ? '<button class="fab" onclick="showAddModal()" title="作品を追加">+</button>' : ''}
     </div>
   `);
+  setupFilter();
   updateCardThumbnails();
   if (JSON.parse(localStorage.getItem(ADMIN_KEY) || '{}').token) enableBatchSelect();
+}
+
+function setupFilter() {
+  const input = document.getElementById('searchBar');
+  const clear = document.getElementById('searchClear');
+  const none = document.getElementById('searchNone');
+  if (!input) return;
+
+  function filter() {
+    const q = input.value.toLowerCase().trim();
+    const cards = document.querySelectorAll('.work-card');
+    let visible = 0;
+    cards.forEach(card => {
+      if (!q) { card.style.display = ''; visible++; return; }
+      let text = card.dataset.searchText;
+      if (!text) {
+        const title = card.querySelector('.work-card-title')?.textContent || '';
+        const desc = card.querySelector('.work-card-desc')?.textContent || '';
+        const tags = Array.from(card.querySelectorAll('.tag')).map(t => t.textContent);
+        text = [title, desc, ...tags].join(' ').toLowerCase();
+        card.dataset.searchText = text;
+      }
+      const match = text.includes(q);
+      card.style.display = match ? '' : 'none';
+      if (match) visible++;
+    });
+    none.style.display = (q && !visible) ? '' : 'none';
+    clear.style.display = q ? '' : 'none';
+  }
+
+  input.addEventListener('input', filter);
+  clear.addEventListener('click', () => { input.value = ''; filter(); input.focus(); });
+
+  // Tag click → filter by tag
+  document.addEventListener('click', (e) => {
+    const tag = e.target.closest('.work-card .tag');
+    if (!tag || !document.querySelector('.works-grid')) return;
+    e.preventDefault();
+    e.stopPropagation();
+    input.value = tag.textContent;
+    filter();
+  });
 }
 
 function enableBatchSelect() {
@@ -174,6 +222,7 @@ function enableBatchSelect() {
 
   document.addEventListener('mousedown', (e) => {
     if (!document.querySelector('.works-grid') || e.button !== 0) return;
+    if (e.target.closest('.search-bar-wrap, .search-clear')) return;
     if (isOnCard(e.target) && !e.target.closest('.card-del-btn')) {
       if (document.querySelector('.work-card.selected')) clearSelection();
       return;
