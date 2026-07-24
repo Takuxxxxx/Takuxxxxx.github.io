@@ -222,8 +222,19 @@ async function updateCardThumbnails() {
         const tweet = await r.json();
         const thumbUrl = tweet.media_extended?.[0]?.thumbnail_url;
         if (thumbUrl) {
-          const card = document.querySelector(`.work-card[href="#work/${encodeURIComponent(p.id)}"] .work-card-thumb`);
-          if (card) card.innerHTML = `<img src="${escapeHtml(thumbUrl)}" alt="" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">`;
+          const thumb = document.querySelector(`.work-card[href="#work/${encodeURIComponent(p.id)}"] .work-card-thumb`);
+          if (!thumb) continue;
+          const existingImg = thumb.querySelector('img');
+          if (existingImg) { existingImg.src = thumbUrl; continue; }
+          const emoji = thumb.querySelector('.emoji');
+          if (emoji) emoji.remove();
+          const img = document.createElement('img');
+          img.src = thumbUrl;
+          img.alt = '';
+          img.style.cssText = 'width:100%;height:100%;object-fit:cover;position:absolute;inset:0';
+          const delBtn = thumb.querySelector('.card-del-btn');
+          if (delBtn) thumb.insertBefore(img, delBtn);
+          else thumb.insertBefore(img, thumb.firstChild);
         }
       }
     } catch {}
@@ -634,7 +645,10 @@ async function adminCommit(updateFn) {
   status.style.color = '#e53e3e';
 }
 
+let _adminSubmitting = false;
+
 async function adminSubmit() {
+  if (_adminSubmitting) return;
   const title = document.getElementById('aTitle').value.trim();
   const linkUrl = document.getElementById('aLinkUrl').value.trim();
   const linkLabel = document.getElementById('aLinkLabel').value.trim();
@@ -642,17 +656,25 @@ async function adminSubmit() {
   if (!title) { alert('タイトルは必須です'); return; }
   const links = (linkUrl && linkLabel) ? [{ label: linkLabel, url: linkUrl }] : [];
 
-  adminCommit((currentData) => {
-    currentData.projects.push({
-      id: getNextProjectId(currentData), title, category: 'video',
-      emoji: '🎬', description: title,
-      details: '', tags: [], date: new Date().toISOString().slice(0, 7),
-      videoUrl: videoUrl || undefined, links,
+  const newId = getNextProjectId(data);
+  _adminSubmitting = true;
+  try {
+    await adminCommit((currentData) => {
+      if (currentData.projects.some(p => p.id === newId)) return;
+      currentData.projects.push({
+        id: newId, title, category: 'video',
+        emoji: '🎬', description: title,
+        details: '', tags: [], date: new Date().toISOString().slice(0, 7),
+        videoUrl: videoUrl || undefined, links,
+      });
     });
-  });
+  } finally {
+    _adminSubmitting = false;
+  }
 }
 
 async function adminSubmitEdit(id) {
+  if (_adminSubmitting) return;
   const title = document.getElementById('aTitle').value.trim();
   const desc = document.getElementById('aDesc').value.trim();
   const emoji = document.getElementById('aEmoji').value.trim() || '🎬';
@@ -667,11 +689,16 @@ async function adminSubmitEdit(id) {
   const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
   const links = (linkUrl && linkLabel) ? [{ label: linkLabel, url: linkUrl }] : [];
 
-  adminCommit((currentData) => {
-    const idx = currentData.projects.findIndex(p => p.id === id);
-    if (idx === -1) return;
-    currentData.projects[idx] = { ...currentData.projects[idx], title, description: desc, emoji, date, tags, details: detail, links, videoUrl: videoUrl || undefined, thumbnail: thumbnail || undefined };
-  });
+  _adminSubmitting = true;
+  try {
+    await adminCommit((currentData) => {
+      const idx = currentData.projects.findIndex(p => p.id === id);
+      if (idx === -1) return;
+      currentData.projects[idx] = { ...currentData.projects[idx], title, description: desc, emoji, date, tags, details: detail, links, videoUrl: videoUrl || undefined, thumbnail: thumbnail || undefined };
+    });
+  } finally {
+    _adminSubmitting = false;
+  }
 }
 
 function adminDeleteProject(id) {

@@ -59,51 +59,7 @@
       "links": []
     },
     {
-      "id": "video-project-10",
-      "title": "てーすと",
-      "category": "video",
-      "emoji": "🎬",
-      "description": "てーすと",
-      "details": "",
-      "tags": [],
-      "date": "2026-07",
-      "videoUrl": "https://www.youtube.com/watch?v=mQEU6vvtGQ4",
-      "links": []
-    },
-    {
       "id": "video-project-11",
-      "title": "tesutttt",
-      "category": "video",
-      "emoji": "🎬",
-      "description": "tesutttt",
-      "details": "",
-      "tags": [],
-      "date": "2026-07",
-      "links": [
-        {
-          "label": "https://x.com/takuch_fortnite/status/2079758458505822320",
-          "url": "https://x.com/takuch_fortnite/status/2079758458505822320"
-        }
-      ]
-    },
-    {
-      "id": "video-project-12",
-      "title": "tesutttt",
-      "category": "video",
-      "emoji": "🎬",
-      "description": "tesutttt",
-      "details": "",
-      "tags": [],
-      "date": "2026-07",
-      "links": [
-        {
-          "label": "https://x.com/takuch_fortnite/status/2079758458505822320",
-          "url": "https://x.com/takuch_fortnite/status/2079758458505822320"
-        }
-      ]
-    },
-    {
-      "id": "video-project-13",
       "title": "tesutttt",
       "category": "video",
       "emoji": "🎬",
