@@ -349,8 +349,9 @@ async function adminLogin() {
   } catch (e) { status.textContent = '通信エラー: ' + e.message; }
 }
 
-function getNextProjectId() {
-  const maxNum = data.projects.reduce((m, p) => {
+function getNextProjectId(sourceData) {
+  const projects = sourceData || data;
+  const maxNum = projects.projects.reduce((m, p) => {
     const n = parseInt(p.id.replace('video-project-', ''));
     return n > m ? n : m;
   }, 0);
@@ -502,7 +503,7 @@ async function adminSubmit() {
 
   adminCommit((currentData) => {
     currentData.projects.push({
-      id: getNextProjectId(), title, category: 'video',
+      id: getNextProjectId(currentData), title, category: 'video',
       emoji: '🎬', description: title,
       details: '', tags: [], date: new Date().toISOString().slice(0, 7),
       videoUrl: videoUrl || undefined, links,
