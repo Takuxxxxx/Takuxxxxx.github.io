@@ -14,14 +14,20 @@
   "projects": [
     {
       "id": "video-project-7",
-      "title": "xのテスト",
+      "title": "xのテストだよ",
       "category": "video",
       "emoji": "🎬",
       "description": "gegeg",
       "details": "gegeg",
       "tags": [],
       "date": "2026-07",
-      "links": []
+      "links": [
+        {
+          "label": "https://x.com/takuch_fortnite/status/2080095556286697875",
+          "url": "https://x.com/takuch_fortnite/status/2080095556286697875https://x.com/takuch_fortnite/status/2080095556286697875"
+        }
+      ],
+      "videoUrl": "https://x.com/takuch_fortnite/status/2080095556286697875"
     },
     {
       "id": "video-project-8",
