@@ -106,6 +106,8 @@ function renderHome(app) {
 
 function renderWorks(app) {
   const projects = data.projects;
+  const saved = JSON.parse(localStorage.getItem(ADMIN_KEY) || '{}');
+  const isAdmin = saved.token && saved.repo;
   app.innerHTML = wrapFadeIn(`
     <div class="container">
       <div class="page-header">
@@ -115,6 +117,7 @@ function renderWorks(app) {
       <div class="works-grid">
         ${projects.map(projectCard).join('')}
       </div>
+      ${isAdmin ? '<button class="fab" onclick="showAddModal()" title="作品を追加">+</button>' : ''}
     </div>
   `);
 }
