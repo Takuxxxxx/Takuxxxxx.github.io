@@ -45,6 +45,18 @@
         }
       ],
       "videoUrl": "https://www.youtube.com/watch?v=AfQzohIx6UA"
+    },
+    {
+      "id": "video-project-9",
+      "title": "てーすと",
+      "category": "video",
+      "emoji": "🎬",
+      "description": "てーすと",
+      "details": "",
+      "tags": [],
+      "date": "2026-07",
+      "videoUrl": "https://www.youtube.com/watch?v=mQEU6vvtGQ4",
+      "links": []
     }
   ]
 }
