@@ -128,8 +128,17 @@ function renderWorks(app) {
   `);
 }
 
+function autoThumb(p) {
+  const url = p.videoUrl || (p.links && p.links[0] ? p.links[0].url : '');
+  if (!url) return '';
+  const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+  if (yt) return `https://img.youtube.com/vi/${yt[1]}/maxresdefault.jpg`;
+  return '';
+}
+
 function projectCard(p) {
-  const thumb = p.thumbnail ? `<img src="${escapeHtml(p.thumbnail)}" alt="" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">` : '';
+  const thumbUrl = p.thumbnail || autoThumb(p);
+  const thumb = thumbUrl ? `<img src="${escapeHtml(thumbUrl)}" alt="" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">` : '';
   return `
     <a href="#work/${encodeURIComponent(p.id)}" class="work-card">
       <div class="work-card-thumb">
@@ -180,7 +189,7 @@ function renderWorkDetail(app, id) {
         </div>
         <div class="work-detail-meta">${p.date || ''}</div>
       </div>
-      ${videoEmbed(previewUrl) || (p.thumbnail ? `<div class="work-detail-thumb" style="overflow:hidden"><img src="${escapeHtml(p.thumbnail)}" alt="" style="width:100%;height:100%;object-fit:cover"></div>` : `<div class="work-detail-thumb"><span>${p.emoji || '🎬'}</span></div>`)}
+      ${videoEmbed(previewUrl) || (p.thumbnail || autoThumb(p) ? `<div class="work-detail-thumb" style="overflow:hidden"><img src="${escapeHtml(p.thumbnail || autoThumb(p))}" alt="" style="width:100%;height:100%;object-fit:cover"></div>` : `<div class="work-detail-thumb"><span>${p.emoji || '🎬'}</span></div>`)}
       <div class="work-detail-glass">
         <div class="work-detail-section">
           <h2>About</h2>
