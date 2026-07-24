@@ -1,0 +1,37 @@
+# VoiceOS Controller 設定ファイル
+# このファイルを編集して動作をカスタマイズできます
+
+# ウェイクワード（この言葉を検知してからコマンド認識を開始）
+wake_word: "パソコン"
+
+# 認識言語 (ja / en)
+language: "ja"
+
+# マイクデバイスインデックス（null = システム既定）
+microphone_index: null
+
+# 音声検出のエネルギー閾値（低いほど敏感、ノイズ環境では調整）
+energy_threshold: 300
+
+# 音声認識エンジン設定
+# engine: "google"（オンライン、Google無料API、高精度・推奨）
+#          "faster-whisper"（オフライン、精度低め・要モデルDL）
+# model_size: faster-whisper用、大きいほど高精度
+recognizer:
+  engine: "google"
+  model_size: "base"
+
+# LLMコマンド解釈（OpenRouter）
+# 環境変数 OPENROUTER_API_KEY にAPIキーを設定してください
+# このキーはコード内に直接書かず、環境変数でのみ管理します
+llm_enabled: true
+llm_model: "google/gemma-4-26b-a4b-it:free"
+
+# 音声フィードバック（TTS）設定
+tts:
+  enabled: true
+
+# ログ設定
+log:
+  level: "INFO"
+  file: "voice_controller.log"

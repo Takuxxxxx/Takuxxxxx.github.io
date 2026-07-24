@@ -1,0 +1,184 @@
+# VoiceOS Controller コマンド定義
+# ここにコマンドとアクションの対応を追加・編集できます
+#
+# アクション一覧:
+#   launch          - アプリケーション/URLを起動 (params.target)
+#   volume_up       - 音量を上げる (params.step: %)
+#   volume_down     - 音量を下げる (params.step: %)
+#   volume_mute     - ミュート切替
+#   screenshot      - スクリーンショット撮影 (params.save_dir)
+#   close_window    - アクティブウィンドウを閉じる
+#   minimize_window - アクティブウィンドウを最小化
+#   sleep           - PCをスリープ (params.minutes: 未実装)
+#   logout          - ログアウト
+#
+# keywords: フレーズにマッチしなかった場合のフォールバック用キーワード
+
+commands:
+
+  - phrases:
+      - "ブラウザを開いて"
+      - "ブラウザ開いて"
+      - "インターネットを開いて"
+      - "ネット開いて"
+      - "Chrome開いて"
+      - "エッジ開いて"
+      - "ブラウザ起動"
+      - "ネット見たい"
+    keywords: ["ブラウザ", "インターネット", "ネット", "chrome", "edge"]
+    action: launch
+    params:
+      target: "https://www.google.com"
+    description: "既定のブラウザでGoogleを開く"
+
+  - phrases:
+      - "メモ帳を開いて"
+      - "メモ帳開いて"
+      - "メモ帳起動"
+      - "メモを取って"
+      - "メモ取りたい"
+    keywords: ["メモ帳", "メモ"]
+    action: launch
+    params:
+      target: "notepad"
+    description: "メモ帳を起動"
+
+  - phrases:
+      - "電卓を開いて"
+      - "電卓開いて"
+      - "電卓起動"
+      - "計算して"
+    keywords: ["電卓", "計算"]
+    action: launch
+    params:
+      target: "calc"
+    description: "電卓を起動"
+
+  - phrases:
+      - "音量を上げて"
+      - "音量上げて"
+      - "音量あげて"
+      - "音を大きくして"
+      - "音大きく"
+      - "ボリューム上げて"
+      - "ボリュームを上げて"
+      - "声を大きくして"
+      - "大きい音"
+    keywords: ["音量", "上げ", "大きく", "ボリューム", "大音量"]
+    action: volume_up
+    params:
+      step: 5
+    description: "システム音量を5%上げる"
+
+  - phrases:
+      - "音量を下げて"
+      - "音量下げて"
+      - "音量さげて"
+      - "音を小さくして"
+      - "音小さく"
+      - "ボリューム下げて"
+      - "ボリュームを下げて"
+      - "小さい音"
+    keywords: ["音量", "下げ", "小さく", "ボリューム"]
+    action: volume_down
+    params:
+      step: 5
+    description: "システム音量を5%下げる"
+
+  - phrases:
+      - "消音"
+      - "ミュート"
+      - "音を消して"
+      - "無音"
+      - "マナーモード"
+    keywords: ["消音", "ミュート", "無音"]
+    action: volume_mute
+    params: {}
+    description: "ミュートを切り替える"
+
+  - phrases:
+      - "スクリーンショットを撮って"
+      - "スクリーンショット"
+      - "スクショ"
+      - "画面を撮って"
+      - "画面キャプチャ"
+      - "キャプチャして"
+      - "写真を撮って"
+      - "撮って"
+    keywords: ["スクリーンショット", "スクショ", "キャプチャ", "画面", "撮っ"]
+    action: screenshot
+    params: {}
+    description: "画面全体のスクリーンショットを撮影"
+
+  - phrases:
+      - "ウィンドウを閉じて"
+      - "ウインドウを閉じて"
+      - "閉じて"
+      - "閉めて"
+      - "今のを閉じて"
+      - "画面を閉じて"
+      - "タブを閉じて"
+    keywords: ["閉じ", "閉め", "閉じる"]
+    action: close_window
+    params: {}
+    description: "アクティブなウィンドウを閉じる"
+
+  - phrases:
+      - "最小化して"
+      - "しまう"
+      - "片付けて"
+      - "隠して"
+    keywords: ["最小化", "しまう", "隠"]
+    action: minimize_window
+    params: {}
+    description: "アクティブなウィンドウを最小化"
+
+  - phrases:
+      - "タスクマネージャーを開いて"
+      - "タスクマネージャー開いて"
+      - "タスクマネージャー"
+      - "タスクマネ"
+    keywords: ["タスクマネージャー", "タスクマネ"]
+    action: launch
+    params:
+      target: "taskmgr"
+    description: "タスクマネージャーを開く"
+
+  - phrases:
+      - "ログアウト"
+      - "サインアウト"
+      - "ログオフ"
+    keywords: ["ログアウト", "サインアウト", "ログオフ", "サインオフ"]
+    action: logout
+    params: {}
+    description: "Windowsからログアウトする"
+
+  - phrases:
+      - "休憩"
+      - "スリープ"
+      - "休止"
+    keywords: ["休憩", "スリープ", "休止"]
+    action: sleep
+    params:
+      minutes: 5
+    description: "PCをスリープ状態にする"
+
+  - phrases:
+      - "パソコンをシャットダウン"
+      - "シャットダウン"
+      - "電源を切って"
+      - "パソコン切って"
+    keywords: ["シャットダウン", "電源"]
+    action: shutdown
+    params: {}
+    description: "PCをシャットダウンする"
+
+  - phrases:
+      - "パソコンを再起動"
+      - "再起動"
+      - "リセット"
+      - "再起動して"
+    keywords: ["再起動", "リセット", "再起動"]
+    action: restart
+    params: {}
+    description: "PCを再起動する"

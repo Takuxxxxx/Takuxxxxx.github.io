@@ -1,0 +1,399 @@
+2026-07-23 16:29:07,715 [INFO] command_executor: コマンド定義を読み込みました: 12件
+2026-07-23 16:29:07,949 [INFO] voice_recognizer: マイクを初期化しました (device_index=None)
+2026-07-23 16:29:09,043 [INFO] voice_recognizer: ノイズ調整完了: energy_threshold=47.19161536360077
+2026-07-23 16:29:09,056 [INFO] __main__: VoiceOS Controller の初期化が完了しました
+2026-07-23 16:39:11,900 [INFO] command_executor: コマンド定義を読み込みました: 12件
+2026-07-23 16:39:12,119 [INFO] voice_recognizer: マイクを初期化しました (device_index=None)
+2026-07-23 16:39:13,203 [INFO] voice_recognizer: ノイズ調整完了: energy_threshold=82.6179762368364
+2026-07-23 16:39:13,218 [INFO] __main__: VoiceOS Controller の初期化が完了しました
+2026-07-23 16:40:36,191 [INFO] command_executor: コマンド定義を読み込みました: 12件
+2026-07-23 16:40:36,401 [INFO] voice_recognizer: マイクを初期化しました (device_index=None)
+2026-07-23 16:40:37,473 [INFO] voice_recognizer: ノイズ調整完了: energy_threshold=45.19466686824704
+2026-07-23 16:40:37,487 [INFO] __main__: VoiceOS Controller の初期化が完了しました
+2026-07-23 16:41:17,865 [INFO] command_executor: コマンド定義を読み込みました: 12件
+2026-07-23 16:41:18,068 [INFO] voice_recognizer: マイクを初期化しました (device_index=None)
+2026-07-23 16:41:19,133 [INFO] voice_recognizer: ノイズ調整完了: energy_threshold=54.05037003837658
+2026-07-23 16:41:19,146 [INFO] __main__: VoiceOS Controller の初期化が完了しました
+2026-07-23 16:41:41,251 [INFO] __main__: === 認識ループを開始 ===
+2026-07-23 16:41:41,252 [INFO] __main__: 音声認識を開始しました（ウェイクワード待機中）
+2026-07-23 16:41:41,252 [ERROR] pystray._base: An error occurred when calling message handler
+Traceback (most recent call last):
+  File "C:\Users\aeroc\Documents\site\voice_controller\venv\Lib\site-packages\pystray\_win32.py", line 412, in _dispatcher
+    return int(icon._message_handlers.get(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\aeroc\Documents\site\voice_controller\venv\Lib\site-packages\pystray\_win32.py", line 224, in _on_notify
+    descriptors[index - 1](self)
+  File "C:\Users\aeroc\Documents\site\voice_controller\venv\Lib\site-packages\pystray\_base.py", line 328, in inner
+    callback(self)
+  File "C:\Users\aeroc\Documents\site\voice_controller\venv\Lib\site-packages\pystray\_base.py", line 453, in __call__
+    return self._action(icon, self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\aeroc\Documents\site\voice_controller\main.py", line 242, in <lambda>
+    lambda icon, item: _toggle_start_stop(icon, item, controller),
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\aeroc\Documents\site\voice_controller\main.py", line 217, in _toggle_start_stop
+    item.text = "停止"
+    ^^^^^^^^^
+AttributeError: property 'text' of 'MenuItem' object has no setter
+2026-07-23 16:41:44,283 [INFO] voice_recognizer: faster-whisper モデルをロード中... (size=base, device=cpu)
+2026-07-23 16:41:44,284 [INFO] voice_recognizer: 初回はモデルのダウンロードに数分かかることがあります。
+2026-07-23 16:41:44,980 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-base/revision/main "HTTP/1.1 200 OK"
+2026-07-23 16:41:45,506 [INFO] voice_recognizer: faster-whisper モデルのロードが完了しました
+2026-07-23 16:41:45,519 [INFO] faster_whisper: Processing audio with duration 00:04.864
+2026-07-23 16:41:45,721 [INFO] faster_whisper: VAD filter removed 00:02.160 of audio
+2026-07-23 16:41:49,618 [INFO] faster_whisper: Processing audio with duration 00:05.248
+2026-07-23 16:41:49,628 [INFO] faster_whisper: VAD filter removed 00:00.528 of audio
+2026-07-23 16:41:54,586 [INFO] faster_whisper: Processing audio with duration 00:05.056
+2026-07-23 16:41:54,594 [INFO] faster_whisper: VAD filter removed 00:02.160 of audio
+2026-07-23 16:41:57,756 [INFO] faster_whisper: Processing audio with duration 00:03.200
+2026-07-23 16:41:57,761 [INFO] faster_whisper: VAD filter removed 00:01.680 of audio
+2026-07-23 16:42:01,956 [INFO] faster_whisper: Processing audio with duration 00:03.648
+2026-07-23 16:42:01,961 [INFO] faster_whisper: VAD filter removed 00:03.648 of audio
+2026-07-23 16:42:05,765 [INFO] faster_whisper: Processing audio with duration 00:04.864
+2026-07-23 16:42:05,773 [INFO] faster_whisper: VAD filter removed 00:03.280 of audio
+2026-07-23 16:42:08,517 [INFO] faster_whisper: Processing audio with duration 00:03.712
+2026-07-23 16:42:08,524 [INFO] faster_whisper: VAD filter removed 00:00.912 of audio
+2026-07-23 16:42:15,627 [INFO] faster_whisper: Processing audio with duration 00:10.368
+2026-07-23 16:42:15,646 [INFO] faster_whisper: VAD filter removed 00:10.368 of audio
+2026-07-23 16:42:17,397 [INFO] faster_whisper: Processing audio with duration 00:03.712
+2026-07-23 16:42:17,403 [INFO] faster_whisper: VAD filter removed 00:03.712 of audio
+2026-07-23 16:42:19,707 [INFO] faster_whisper: Processing audio with duration 00:05.248
+2026-07-23 16:42:19,717 [INFO] faster_whisper: VAD filter removed 00:03.328 of audio
+2026-07-23 16:42:23,537 [INFO] faster_whisper: Processing audio with duration 00:06.144
+2026-07-23 16:42:23,547 [INFO] faster_whisper: VAD filter removed 00:06.144 of audio
+2026-07-23 16:42:26,447 [INFO] faster_whisper: Processing audio with duration 00:05.312
+2026-07-23 16:42:26,456 [INFO] faster_whisper: VAD filter removed 00:05.312 of audio
+2026-07-23 16:42:30,726 [INFO] faster_whisper: Processing audio with duration 00:04.544
+2026-07-23 16:42:30,735 [INFO] faster_whisper: VAD filter removed 00:04.544 of audio
+2026-07-23 16:42:33,457 [INFO] faster_whisper: Processing audio with duration 00:03.264
+2026-07-23 16:42:33,462 [INFO] faster_whisper: VAD filter removed 00:03.264 of audio
+2026-07-23 16:42:39,457 [INFO] faster_whisper: Processing audio with duration 00:14.784
+2026-07-23 16:42:39,483 [INFO] faster_whisper: VAD filter removed 00:14.784 of audio
+2026-07-23 16:42:42,517 [INFO] faster_whisper: Processing audio with duration 00:07.232
+2026-07-23 16:42:42,529 [INFO] faster_whisper: VAD filter removed 00:04.880 of audio
+2026-07-23 16:42:52,908 [INFO] faster_whisper: Processing audio with duration 00:14.976
+2026-07-23 16:42:52,933 [INFO] faster_whisper: VAD filter removed 00:14.976 of audio
+2026-07-23 16:42:57,327 [INFO] faster_whisper: Processing audio with duration 00:11.008
+2026-07-23 16:42:57,347 [INFO] faster_whisper: VAD filter removed 00:11.008 of audio
+2026-07-23 16:43:02,767 [INFO] faster_whisper: Processing audio with duration 00:14.720
+2026-07-23 16:43:02,791 [INFO] faster_whisper: VAD filter removed 00:14.720 of audio
+2026-07-23 16:43:04,317 [INFO] faster_whisper: Processing audio with duration 00:03.072
+2026-07-23 16:43:04,322 [INFO] faster_whisper: VAD filter removed 00:03.072 of audio
+2026-07-23 16:43:09,457 [INFO] faster_whisper: Processing audio with duration 00:13.952
+2026-07-23 16:43:09,479 [INFO] faster_whisper: VAD filter removed 00:13.952 of audio
+2026-07-23 16:43:13,647 [INFO] faster_whisper: Processing audio with duration 00:10.368
+2026-07-23 16:43:13,666 [INFO] faster_whisper: VAD filter removed 00:10.368 of audio
+2026-07-23 16:43:18,828 [INFO] faster_whisper: Processing audio with duration 00:14.016
+2026-07-23 16:43:18,852 [INFO] faster_whisper: VAD filter removed 00:14.016 of audio
+2026-07-23 16:43:23,598 [INFO] faster_whisper: Processing audio with duration 00:11.968
+2026-07-23 16:43:23,619 [INFO] faster_whisper: VAD filter removed 00:11.968 of audio
+2026-07-23 16:43:28,856 [INFO] faster_whisper: Processing audio with duration 00:14.208
+2026-07-23 16:43:28,881 [INFO] faster_whisper: VAD filter removed 00:14.208 of audio
+2026-07-23 16:43:34,644 [INFO] faster_whisper: Processing audio with duration 00:14.080
+2026-07-23 16:43:34,679 [INFO] faster_whisper: VAD filter removed 00:14.080 of audio
+2026-07-23 16:43:40,717 [INFO] faster_whisper: Processing audio with duration 00:14.784
+2026-07-23 16:43:40,740 [INFO] faster_whisper: VAD filter removed 00:14.784 of audio
+2026-07-23 16:43:45,919 [INFO] faster_whisper: Processing audio with duration 00:14.080
+2026-07-23 16:43:45,942 [INFO] faster_whisper: VAD filter removed 00:14.080 of audio
+2026-07-23 16:43:50,537 [INFO] faster_whisper: Processing audio with duration 00:11.520
+2026-07-23 16:43:50,554 [INFO] faster_whisper: VAD filter removed 00:11.520 of audio
+2026-07-23 16:43:52,167 [INFO] faster_whisper: Processing audio with duration 00:03.328
+2026-07-23 16:43:52,172 [INFO] faster_whisper: VAD filter removed 00:03.328 of audio
+2026-07-23 16:43:54,576 [INFO] faster_whisper: Processing audio with duration 00:04.032
+2026-07-23 16:43:54,583 [INFO] faster_whisper: VAD filter removed 00:04.032 of audio
+2026-07-23 16:43:59,937 [INFO] faster_whisper: Processing audio with duration 00:13.632
+2026-07-23 16:43:59,961 [INFO] faster_whisper: VAD filter removed 00:13.632 of audio
+2026-07-23 16:44:03,966 [INFO] faster_whisper: Processing audio with duration 00:09.920
+2026-07-23 16:44:03,982 [INFO] faster_whisper: VAD filter removed 00:09.920 of audio
+2026-07-23 16:44:05,827 [INFO] faster_whisper: Processing audio with duration 00:03.968
+2026-07-23 16:44:05,833 [INFO] faster_whisper: VAD filter removed 00:03.968 of audio
+2026-07-23 16:44:13,640 [INFO] command_executor: コマンド定義を読み込みました: 12件
+2026-07-23 16:44:13,814 [INFO] voice_recognizer: マイクを初期化しました (device_index=None)
+2026-07-23 16:44:14,873 [INFO] voice_recognizer: ノイズ調整完了: energy_threshold=57.03972029602322
+2026-07-23 16:44:14,887 [INFO] __main__: VoiceOS Controller の初期化が完了しました
+2026-07-23 16:44:19,800 [INFO] voice_recognizer: faster-whisper モデルをロード中... (size=base, device=cpu)
+2026-07-23 16:44:19,801 [INFO] voice_recognizer: 初回はモデルのダウンロードに数分かかることがあります。
+2026-07-23 16:44:20,473 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-base/revision/main "HTTP/1.1 200 OK"
+2026-07-23 16:44:20,837 [INFO] voice_recognizer: faster-whisper モデルのロードが完了しました
+2026-07-23 16:44:20,838 [INFO] __main__: === 認識ループを開始 ===
+2026-07-23 16:44:20,838 [INFO] __main__: 音声認識を開始しました（ウェイクワード待機中）
+2026-07-23 16:44:20,839 [ERROR] pystray._base: An error occurred when calling message handler
+Traceback (most recent call last):
+  File "C:\Users\aeroc\Documents\site\voice_controller\venv\Lib\site-packages\pystray\_win32.py", line 412, in _dispatcher
+    return int(icon._message_handlers.get(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\aeroc\Documents\site\voice_controller\venv\Lib\site-packages\pystray\_win32.py", line 224, in _on_notify
+    descriptors[index - 1](self)
+  File "C:\Users\aeroc\Documents\site\voice_controller\venv\Lib\site-packages\pystray\_base.py", line 328, in inner
+    callback(self)
+  File "C:\Users\aeroc\Documents\site\voice_controller\venv\Lib\site-packages\pystray\_base.py", line 453, in __call__
+    return self._action(icon, self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\aeroc\Documents\site\voice_controller\main.py", line 259, in <lambda>
+    lambda icon, item: _toggle_start_stop(icon, item, controller),
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\aeroc\Documents\site\voice_controller\main.py", line 234, in _toggle_start_stop
+    item.text = "停止"
+    ^^^^^^^^^
+AttributeError: property 'text' of 'MenuItem' object has no setter
+2026-07-23 16:44:23,986 [INFO] faster_whisper: Processing audio with duration 00:07.360
+2026-07-23 16:44:24,095 [INFO] faster_whisper: VAD filter removed 00:06.432 of audio
+2026-07-23 16:44:35,727 [INFO] faster_whisper: Processing audio with duration 00:08.384
+2026-07-23 16:44:35,740 [INFO] faster_whisper: VAD filter removed 00:05.856 of audio
+2026-07-23 16:44:42,516 [INFO] faster_whisper: Processing audio with duration 00:10.624
+2026-07-23 16:44:42,532 [INFO] faster_whisper: VAD filter removed 00:09.056 of audio
+2026-07-23 16:44:47,127 [INFO] faster_whisper: Processing audio with duration 00:07.552
+2026-07-23 16:44:47,138 [INFO] faster_whisper: VAD filter removed 00:05.696 of audio
+2026-07-23 16:44:57,487 [INFO] faster_whisper: Processing audio with duration 00:13.888
+2026-07-23 16:44:57,513 [INFO] faster_whisper: VAD filter removed 00:05.808 of audio
+2026-07-23 16:45:11,176 [INFO] faster_whisper: Processing audio with duration 00:05.312
+2026-07-23 16:45:11,187 [INFO] faster_whisper: VAD filter removed 00:05.312 of audio
+2026-07-23 16:45:18,427 [INFO] faster_whisper: Processing audio with duration 00:12.352
+2026-07-23 16:45:18,444 [INFO] faster_whisper: VAD filter removed 00:12.352 of audio
+2026-07-23 16:45:23,577 [INFO] faster_whisper: Processing audio with duration 00:13.952
+2026-07-23 16:45:23,603 [INFO] faster_whisper: VAD filter removed 00:13.952 of audio
+2026-07-23 16:45:27,706 [INFO] faster_whisper: Processing audio with duration 00:10.176
+2026-07-23 16:45:27,724 [INFO] faster_whisper: VAD filter removed 00:10.176 of audio
+2026-07-23 16:45:32,889 [INFO] faster_whisper: Processing audio with duration 00:14.016
+2026-07-23 16:45:32,912 [INFO] faster_whisper: VAD filter removed 00:14.016 of audio
+2026-07-23 16:45:38,118 [INFO] faster_whisper: Processing audio with duration 00:14.080
+2026-07-23 16:45:38,141 [INFO] faster_whisper: VAD filter removed 00:14.080 of audio
+2026-07-23 16:45:40,686 [INFO] faster_whisper: Processing audio with duration 00:05.888
+2026-07-23 16:45:40,698 [INFO] faster_whisper: VAD filter removed 00:05.888 of audio
+2026-07-23 16:45:45,847 [INFO] faster_whisper: Processing audio with duration 00:13.952
+2026-07-23 16:45:45,869 [INFO] faster_whisper: VAD filter removed 00:13.952 of audio
+2026-07-23 16:45:51,107 [INFO] faster_whisper: Processing audio with duration 00:14.208
+2026-07-23 16:45:51,131 [INFO] faster_whisper: VAD filter removed 00:14.208 of audio
+2026-07-23 16:45:55,257 [INFO] faster_whisper: Processing audio with duration 00:10.240
+2026-07-23 16:45:55,275 [INFO] faster_whisper: VAD filter removed 00:10.240 of audio
+2026-07-23 16:46:00,418 [INFO] faster_whisper: Processing audio with duration 00:13.952
+2026-07-23 16:46:00,441 [INFO] faster_whisper: VAD filter removed 00:13.952 of audio
+2026-07-23 16:46:05,608 [INFO] faster_whisper: Processing audio with duration 00:14.016
+2026-07-23 16:46:05,631 [INFO] faster_whisper: VAD filter removed 00:14.016 of audio
+2026-07-23 16:46:10,898 [INFO] faster_whisper: Processing audio with duration 00:14.272
+2026-07-23 16:46:10,920 [INFO] faster_whisper: VAD filter removed 00:14.272 of audio
+2026-07-23 16:46:16,157 [INFO] faster_whisper: Processing audio with duration 00:14.208
+2026-07-23 16:46:16,182 [INFO] faster_whisper: VAD filter removed 00:14.208 of audio
+2026-07-23 16:46:20,096 [INFO] faster_whisper: Processing audio with duration 00:09.664
+2026-07-23 16:46:20,112 [INFO] faster_whisper: VAD filter removed 00:09.664 of audio
+2026-07-23 16:46:25,298 [INFO] faster_whisper: Processing audio with duration 00:14.080
+2026-07-23 16:46:25,322 [INFO] faster_whisper: VAD filter removed 00:14.080 of audio
+2026-07-23 16:46:29,027 [INFO] faster_whisper: Processing audio with duration 00:09.088
+2026-07-23 16:46:29,041 [INFO] faster_whisper: VAD filter removed 00:09.088 of audio
+2026-07-23 16:46:34,278 [INFO] faster_whisper: Processing audio with duration 00:14.208
+2026-07-23 16:46:34,301 [INFO] faster_whisper: VAD filter removed 00:14.208 of audio
+2026-07-23 16:46:39,498 [INFO] faster_whisper: Processing audio with duration 00:14.080
+2026-07-23 16:46:39,522 [INFO] faster_whisper: VAD filter removed 00:14.080 of audio
+2026-07-23 16:46:42,777 [INFO] faster_whisper: Processing audio with duration 00:07.040
+2026-07-23 16:46:42,790 [INFO] faster_whisper: VAD filter removed 00:07.040 of audio
+2026-07-23 16:47:58,972 [INFO] command_executor: コマンド定義を読み込みました: 12件
+2026-07-23 16:47:59,180 [INFO] voice_recognizer: マイクを初期化しました (device_index=None)
+2026-07-23 16:48:00,243 [INFO] voice_recognizer: ノイズ調整完了: energy_threshold=75.24315858532721
+2026-07-23 16:48:00,257 [INFO] __main__: VoiceOS Controller の初期化が完了しました
+2026-07-23 16:48:03,835 [INFO] voice_recognizer: faster-whisper モデルをロード中... (size=tiny, device=cpu)
+2026-07-23 16:48:03,835 [INFO] voice_recognizer: 初回はモデルのダウンロードに数分かかることがあります。
+2026-07-23 16:48:04,601 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-tiny/revision/main "HTTP/1.1 200 OK"
+2026-07-23 16:48:04,865 [INFO] voice_recognizer: faster-whisper モデルのロードが完了しました
+2026-07-23 16:48:04,866 [INFO] __main__: === 認識ループを開始 ===
+2026-07-23 16:48:04,866 [INFO] __main__: 音声認識を開始しました（ウェイクワード待機中）
+2026-07-23 16:48:09,537 [INFO] faster_whisper: Processing audio with duration 00:06.464
+2026-07-23 16:48:12,608 [INFO] faster_whisper: Processing audio with duration 00:02.368
+2026-07-23 16:48:14,697 [INFO] faster_whisper: Processing audio with duration 00:03.328
+2026-07-23 16:48:16,636 [INFO] faster_whisper: Processing audio with duration 00:04.032
+2026-07-23 16:48:19,136 [INFO] faster_whisper: Processing audio with duration 00:04.160
+2026-07-23 16:48:25,726 [INFO] faster_whisper: Processing audio with duration 00:06.912
+2026-07-23 16:48:38,257 [INFO] faster_whisper: Processing audio with duration 00:08.576
+2026-07-23 16:50:51,761 [INFO] command_executor: コマンド定義を読み込みました: 12件
+2026-07-23 16:50:51,967 [INFO] voice_recognizer: マイクを初期化しました (device_index=None)
+2026-07-23 16:50:53,033 [INFO] voice_recognizer: ノイズ調整完了: energy_threshold=300
+2026-07-23 16:50:53,047 [INFO] __main__: VoiceOS Controller の初期化が完了しました
+2026-07-23 16:50:55,415 [INFO] voice_recognizer: faster-whisper モデルをロード中... (size=base, device=cpu)
+2026-07-23 16:50:55,415 [INFO] voice_recognizer: 初回はモデルのダウンロードに数分かかることがあります。
+2026-07-23 16:50:56,213 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-base/revision/main "HTTP/1.1 200 OK"
+2026-07-23 16:50:56,613 [INFO] voice_recognizer: faster-whisper モデルのロードが完了しました
+2026-07-23 16:50:56,614 [INFO] __main__: === 認識ループを開始 ===
+2026-07-23 16:50:56,614 [INFO] __main__: 音声認識を開始しました（ウェイクワード待機中）
+2026-07-23 16:51:01,796 [INFO] faster_whisper: Processing audio with duration 00:03.968
+2026-07-23 16:51:10,017 [INFO] faster_whisper: Processing audio with duration 00:04.736
+2026-07-23 16:51:13,008 [INFO] faster_whisper: Processing audio with duration 00:02.368
+2026-07-23 16:51:16,526 [INFO] faster_whisper: Processing audio with duration 00:04.864
+2026-07-23 16:52:09,938 [INFO] command_executor: コマンド定義を読み込みました: 12件
+2026-07-23 16:52:10,175 [INFO] voice_recognizer: マイクを初期化しました (device_index=None)
+2026-07-23 16:52:11,253 [INFO] voice_recognizer: ノイズ調整完了: energy_threshold=2298
+2026-07-23 16:52:11,266 [INFO] __main__: VoiceOS Controller の初期化が完了しました
+2026-07-23 16:54:14,255 [INFO] command_executor: コマンド定義を読み込みました: 12件
+2026-07-23 16:54:14,451 [INFO] voice_recognizer: マイクを初期化しました (device_index=None)
+2026-07-23 16:54:15,512 [INFO] voice_recognizer: ノイズ調整完了: energy_threshold=300
+2026-07-23 16:54:15,527 [INFO] __main__: VoiceOS Controller の初期化が完了しました
+2026-07-23 16:54:18,886 [INFO] voice_recognizer: faster-whisper モデルをロード中... (size=base, device=cpu)
+2026-07-23 16:54:18,887 [INFO] voice_recognizer: 初回はモデルのダウンロードに数分かかることがあります。
+2026-07-23 16:54:19,634 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-base/revision/main "HTTP/1.1 200 OK"
+2026-07-23 16:54:20,092 [INFO] voice_recognizer: faster-whisper モデルのロードが完了しました
+2026-07-23 16:54:20,092 [INFO] __main__: === 認識ループを開始 ===
+2026-07-23 16:54:20,094 [INFO] __main__: 音声認識を開始しました（ウェイクワード待機中）
+2026-07-23 16:54:24,775 [INFO] __main__: ウェイクワードを検出: パソコン ブラウザを開いて
+2026-07-23 16:54:25,000 [INFO] comtypes.client._code_cache: Could not import comtypes.gen, trying to create it.
+2026-07-23 16:54:25,000 [INFO] comtypes.client._code_cache: Created comtypes.gen directory: 'C:\Users\aeroc\Documents\site\voice_controller\venv\Lib\site-packages\comtypes\gen'
+2026-07-23 16:54:25,001 [INFO] comtypes.client._code_cache: Writing __init__.py file: 'C:\Users\aeroc\Documents\site\voice_controller\venv\Lib\site-packages\comtypes\gen\__init__.py'
+2026-07-23 16:54:25,011 [INFO] comtypes.client._code_cache: Using writeable comtypes cache directory: 'C:\Users\aeroc\Documents\site\voice_controller\venv\Lib\site-packages\comtypes\gen'
+2026-07-23 16:54:25,027 [INFO] comtypes.client._generate: Could not import comtypes.gen._C866CA3A_32F7_11D2_9602_00C04F8EE628_0_5_4: No module named 'comtypes.gen._C866CA3A_32F7_11D2_9602_00C04F8EE628_0_5_4'
+2026-07-23 16:54:25,032 [INFO] comtypes.client._generate: # Generating comtypes.gen._C866CA3A_32F7_11D2_9602_00C04F8EE628_0_5_4
+2026-07-23 16:54:25,092 [INFO] comtypes.client._generate: # Generating comtypes.gen.SpeechLib
+2026-07-23 16:54:25,100 [INFO] comtypes.client._generate: Could not import comtypes.gen._00020430_0000_0000_C000_000000000046_0_2_0: No module named 'comtypes.gen._00020430_0000_0000_C000_000000000046_0_2_0'
+2026-07-23 16:54:25,101 [INFO] comtypes.client._generate: # Generating comtypes.gen._00020430_0000_0000_C000_000000000046_0_2_0
+2026-07-23 16:54:25,109 [INFO] comtypes.client._generate: # Generating comtypes.gen.stdole
+2026-07-23 16:54:26,544 [INFO] command_executor: コマンド一致: "ブラウザを開いて" → launch
+2026-07-23 16:54:26,623 [INFO] command_executor: ブラウザで開きました: https://www.google.com
+2026-07-23 16:54:26,623 [INFO] command_executor: コマンド実行完了: launch
+2026-07-23 16:54:37,497 [INFO] __main__: ウェイクワードを検出: パソコン YouTube を検索して
+2026-07-23 16:54:38,738 [INFO] command_executor: 未登録のコマンドです: "パソコン YouTube を検索して"
+2026-07-23 16:54:44,908 [INFO] voice_recognizer: コマンド認識: PC 版の
+2026-07-23 16:54:44,908 [INFO] command_executor: 未登録のコマンドです: "PC 版の"
+2026-07-23 16:55:26,365 [INFO] __main__: ウェイクワードを検出: パソコン メモ帳を開いて
+2026-07-23 16:55:27,540 [INFO] command_executor: コマンド一致: "メモ帳を開いて" → launch
+2026-07-23 16:55:27,577 [INFO] command_executor: アプリケーションを起動しました: notepad
+2026-07-23 16:55:27,577 [INFO] command_executor: コマンド実行完了: launch
+2026-07-23 16:55:59,783 [INFO] __main__: ウェイクワードを検出: パソコン設定を開いて
+2026-07-23 16:56:00,962 [INFO] command_executor: 未登録のコマンドです: "パソコン設定を開いて"
+2026-07-23 16:56:06,606 [INFO] voice_recognizer: コマンド認識: パソコンって言わないといけないのか 開けてないけど
+2026-07-23 16:56:06,606 [INFO] command_executor: 未登録のコマンドです: "パソコンって言わないといけないのか 開けてないけど"
+2026-07-23 17:01:41,494 [INFO] command_executor: コマンド定義を読み込みました: 14件
+2026-07-23 17:01:41,661 [INFO] voice_recognizer: マイクを初期化しました (device_index=None)
+2026-07-23 17:01:42,692 [INFO] voice_recognizer: ノイズ調整完了: energy_threshold=300
+2026-07-23 17:01:42,706 [INFO] __main__: VoiceOS Controller の初期化が完了しました
+2026-07-23 17:01:47,903 [INFO] voice_recognizer: faster-whisper モデルをロード中... (size=base, device=cpu)
+2026-07-23 17:01:47,903 [INFO] voice_recognizer: 初回はモデルのダウンロードに数分かかることがあります。
+2026-07-23 17:01:48,462 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-base/revision/main "HTTP/1.1 200 OK"
+2026-07-23 17:01:48,737 [INFO] voice_recognizer: faster-whisper モデルのロードが完了しました
+2026-07-23 17:01:48,738 [INFO] __main__: === 認識ループを開始 ===
+2026-07-23 17:01:48,738 [INFO] __main__: 音声認識を開始しました（ウェイクワード待機中）
+2026-07-23 17:01:55,247 [INFO] __main__: ウェイクワードを検出: パソコン YouTube 検索して
+2026-07-23 17:01:55,401 [INFO] comtypes.client._code_cache: Imported existing <module 'comtypes.gen' from 'C:\\Users\\aeroc\\Documents\\site\\voice_controller\\venv\\Lib\\site-packages\\comtypes\\gen\\__init__.py'>
+2026-07-23 17:01:55,401 [INFO] comtypes.client._code_cache: Using writeable comtypes cache directory: 'C:\Users\aeroc\Documents\site\voice_controller\venv\Lib\site-packages\comtypes\gen'
+2026-07-23 17:01:56,494 [INFO] command_executor: 検索: パソコン YouTube 
+2026-07-23 17:01:56,519 [INFO] command_executor: 汎用コマンド一致: True
+2026-07-23 17:02:14,231 [INFO] __main__: ウェイクワードを検出: パソコン ロジクール G HUB 開いて
+2026-07-23 17:02:15,396 [INFO] command_executor: 汎用起動: パソコン ロジクール G HUB -> パソコン ロジクール G HUB
+2026-07-23 17:02:15,407 [INFO] command_executor: パソコン ロジクール G HUB を起動しました
+2026-07-23 17:02:15,408 [INFO] command_executor: 汎用コマンド一致: True
+2026-07-23 17:02:25,401 [INFO] __main__: ウェイクワードを検出: パソコン できてないよ
+2026-07-23 17:02:26,570 [INFO] command_executor: 未登録のコマンドです: "パソコン できてないよ"
+2026-07-23 17:02:57,096 [INFO] __main__: ウェイクワードを検出: パソコンスチームを開いて
+2026-07-23 17:02:58,260 [INFO] command_executor: 汎用起動: パソコンスチーム -> パソコンスチーム
+2026-07-23 17:02:58,267 [INFO] command_executor: パソコンスチーム を起動しました
+2026-07-23 17:02:58,267 [INFO] command_executor: 汎用コマンド一致: True
+2026-07-23 17:03:10,299 [INFO] __main__: ウェイクワードを検出: パソコンスキーを開いて
+2026-07-23 17:03:11,453 [INFO] command_executor: 汎用起動: パソコンスキー -> パソコンスキー
+2026-07-23 17:03:11,462 [INFO] command_executor: パソコンスキー を起動しました
+2026-07-23 17:03:11,462 [INFO] command_executor: 汎用コマンド一致: True
+2026-07-23 17:03:20,346 [INFO] __main__: ウェイクワードを検出: パソコン ゴミ箱 を開いて
+2026-07-23 17:03:21,512 [INFO] command_executor: 汎用起動: パソコン ゴミ箱 -> パソコン ゴミ箱
+2026-07-23 17:03:21,521 [INFO] command_executor: パソコン ゴミ箱 を起動しました
+2026-07-23 17:03:21,521 [INFO] command_executor: 汎用コマンド一致: True
+2026-07-23 17:06:39,383 [INFO] command_executor: コマンド定義を読み込みました: 14件
+2026-07-23 17:06:39,551 [INFO] voice_recognizer: マイクを初期化しました (device_index=None)
+2026-07-23 17:06:40,583 [INFO] voice_recognizer: ノイズ調整完了: energy_threshold=300
+2026-07-23 17:06:40,595 [INFO] __main__: LLMコマンド解釈は無効です（OPENROUTER_API_KEY未設定）
+2026-07-23 17:06:40,596 [INFO] __main__: VoiceOS Controller の初期化が完了しました
+2026-07-23 17:06:43,262 [INFO] voice_recognizer: faster-whisper モデルをロード中... (size=base, device=cpu)
+2026-07-23 17:06:43,262 [INFO] voice_recognizer: 初回はモデルのダウンロードに数分かかることがあります。
+2026-07-23 17:06:43,894 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-base/revision/main "HTTP/1.1 200 OK"
+2026-07-23 17:06:44,181 [INFO] voice_recognizer: faster-whisper モデルのロードが完了しました
+2026-07-23 17:06:44,181 [INFO] __main__: === 認識ループを開始 ===
+2026-07-23 17:06:44,181 [INFO] __main__: 音声認識を開始しました（ウェイクワード待機中）
+2026-07-23 17:06:50,196 [INFO] __main__: ウェイクワードを検出: パソコン YouTube を開いて
+2026-07-23 17:06:50,358 [INFO] comtypes.client._code_cache: Imported existing <module 'comtypes.gen' from 'C:\\Users\\aeroc\\Documents\\site\\voice_controller\\venv\\Lib\\site-packages\\comtypes\\gen\\__init__.py'>
+2026-07-23 17:06:50,358 [INFO] comtypes.client._code_cache: Using writeable comtypes cache directory: 'C:\Users\aeroc\Documents\site\voice_controller\venv\Lib\site-packages\comtypes\gen'
+2026-07-23 17:06:51,444 [INFO] command_executor: 汎用起動: パソコン YouTube -> パソコン YouTube
+2026-07-23 17:06:51,451 [INFO] command_executor: パソコン YouTube を起動しました
+2026-07-23 17:06:51,451 [INFO] command_executor: 汎用コマンド一致: True
+2026-07-23 17:07:02,595 [INFO] __main__: ウェイクワードを検出: パソコン YouTube を起動して
+2026-07-23 17:07:03,757 [INFO] command_executor: 汎用起動: パソコン YouTube -> パソコン YouTube
+2026-07-23 17:07:03,760 [INFO] command_executor: パソコン YouTube を起動しました
+2026-07-23 17:07:03,760 [INFO] command_executor: 汎用コマンド一致: True
+2026-07-23 17:07:09,435 [INFO] __main__: ウェイクワードを検出: パソコン YouTube を検索して
+2026-07-23 17:07:10,601 [INFO] command_executor: 検索: パソコン YouTube 
+2026-07-23 17:07:10,624 [INFO] command_executor: 汎用コマンド一致: True
+2026-07-23 17:07:35,988 [INFO] __main__: ウェイクワードを検出: パソコン G HUB 開いて
+2026-07-23 17:07:37,149 [INFO] command_executor: 汎用起動: パソコン G HUB -> パソコン G HUB
+2026-07-23 17:07:37,163 [INFO] command_executor: パソコン G HUB を起動しました
+2026-07-23 17:07:37,163 [INFO] command_executor: 汎用コマンド一致: True
+2026-07-23 17:19:09,142 [INFO] command_executor: コマンド定義を読み込みました: 14件
+2026-07-23 17:19:09,314 [INFO] voice_recognizer: マイクを初期化しました (device_index=None)
+2026-07-23 17:19:10,353 [INFO] voice_recognizer: ノイズ調整完了: energy_threshold=300
+2026-07-23 17:19:10,364 [INFO] __main__: LLMコマンド解釈が有効です
+2026-07-23 17:19:10,364 [INFO] __main__: VoiceOS Controller の初期化が完了しました
+2026-07-23 17:22:41,460 [INFO] command_executor: コマンド定義を読み込みました: 14件
+2026-07-23 17:22:41,616 [INFO] voice_recognizer: マイクを初期化しました (device_index=None)
+2026-07-23 17:22:42,662 [INFO] voice_recognizer: ノイズ調整完了: energy_threshold=300
+2026-07-23 17:22:42,675 [INFO] __main__: LLMコマンド解釈が有効です
+2026-07-23 17:22:42,675 [INFO] __main__: VoiceOS Controller の初期化が完了しました
+2026-07-23 17:22:46,457 [INFO] voice_recognizer: faster-whisper モデルをロード中... (size=base, device=cpu)
+2026-07-23 17:22:46,457 [INFO] voice_recognizer: 初回はモデルのダウンロードに数分かかることがあります。
+2026-07-23 17:22:47,007 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-base/revision/main "HTTP/1.1 200 OK"
+2026-07-23 17:22:47,280 [INFO] voice_recognizer: faster-whisper モデルのロードが完了しました
+2026-07-23 17:22:47,281 [INFO] __main__: === 認識ループを開始 ===
+2026-07-23 17:22:47,281 [INFO] __main__: 音声認識を開始しました（ウェイクワード待機中）
+2026-07-23 17:22:54,690 [INFO] __main__: ウェイクワードを検出: パソコン
+2026-07-23 17:22:54,854 [INFO] comtypes.client._code_cache: Imported existing <module 'comtypes.gen' from 'C:\\Users\\aeroc\\Documents\\site\\voice_controller\\venv\\Lib\\site-packages\\comtypes\\gen\\__init__.py'>
+2026-07-23 17:22:54,855 [INFO] comtypes.client._code_cache: Using writeable comtypes cache directory: 'C:\Users\aeroc\Documents\site\voice_controller\venv\Lib\site-packages\comtypes\gen'
+2026-07-23 17:22:55,936 [INFO] command_executor: LLM解釈を試行: "パソコン"
+2026-07-23 17:22:58,112 [INFO] llm_interpreter: LLM解釈: パソコン -> unknown
+2026-07-23 17:22:58,113 [WARNING] command_executor: LLMが未知のアクションを返しました: unknown
+2026-07-23 17:23:03,752 [INFO] voice_recognizer: コマンド認識: Discord を表示して
+2026-07-23 17:23:03,754 [INFO] command_executor: LLM解釈を試行: "Discord を表示して"
+2026-07-23 17:23:05,100 [INFO] llm_interpreter: LLM解釈: Discord を表示して -> launch_app
+2026-07-23 17:23:05,102 [INFO] command_executor: 汎用起動: Discord -> Discord
+2026-07-23 17:23:05,109 [INFO] command_executor: Discord を起動しました
+2026-07-23 17:23:05,109 [INFO] command_executor: LLMコマンド実行完了: launch_app
+2026-07-23 17:23:14,605 [INFO] __main__: ウェイクワードを検出: パソコン 音量を3上げて
+2026-07-23 17:23:15,765 [INFO] command_executor: LLM解釈を試行: "パソコン 音量を3上げて"
+2026-07-23 17:23:17,938 [INFO] llm_interpreter: LLM解釈: パソコン 音量を3上げて -> volume_up
+2026-07-23 17:23:18,044 [INFO] command_executor: 音量を変更しました (key=volume up, presses=1)
+2026-07-23 17:23:18,044 [INFO] command_executor: LLMコマンド実行完了: volume_up
+2026-07-23 17:23:23,429 [INFO] __main__: ウェイクワードを検出: 3 下げて パソコン
+2026-07-23 17:23:24,588 [INFO] command_executor: LLM解釈を試行: "3 下げて パソコン"
+2026-07-23 17:23:25,601 [INFO] llm_interpreter: LLM解釈: 3 下げて パソコン -> volume_down
+2026-07-23 17:23:25,654 [INFO] command_executor: 音量を変更しました (key=volume down, presses=1)
+2026-07-23 17:23:25,654 [INFO] command_executor: LLMコマンド実行完了: volume_down
+2026-07-23 17:25:18,525 [INFO] command_executor: コマンド定義を読み込みました: 14件
+2026-07-23 17:25:18,684 [INFO] voice_recognizer: マイクを初期化しました (device_index=None)
+2026-07-23 17:25:19,712 [INFO] voice_recognizer: ノイズ調整完了: energy_threshold=300
+2026-07-23 17:25:19,726 [INFO] __main__: LLMコマンド解釈が有効です
+2026-07-23 17:25:19,726 [INFO] __main__: VoiceOS Controller の初期化が完了しました
+2026-07-23 17:25:19,907 [INFO] voice_recognizer: faster-whisper モデルをロード中... (size=base, device=cpu)
+2026-07-23 17:25:19,907 [INFO] voice_recognizer: 初回はモデルのダウンロードに数分かかることがあります。
+2026-07-23 17:25:20,647 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-base/revision/main "HTTP/1.1 200 OK"
+2026-07-23 17:25:20,927 [INFO] voice_recognizer: faster-whisper モデルのロードが完了しました
+2026-07-23 17:25:20,927 [INFO] __main__: === 認識ループを開始 ===
+2026-07-23 17:25:20,927 [INFO] __main__: 音声認識を開始しました（ウェイクワード待機中）
+2026-07-23 17:25:24,550 [INFO] __main__: ウェイクワードを検出: パソコン
+2026-07-23 17:25:24,712 [INFO] comtypes.client._code_cache: Imported existing <module 'comtypes.gen' from 'C:\\Users\\aeroc\\Documents\\site\\voice_controller\\venv\\Lib\\site-packages\\comtypes\\gen\\__init__.py'>
+2026-07-23 17:25:24,712 [INFO] comtypes.client._code_cache: Using writeable comtypes cache directory: 'C:\Users\aeroc\Documents\site\voice_controller\venv\Lib\site-packages\comtypes\gen'
+2026-07-23 17:25:25,793 [INFO] command_executor: LLM解釈を試行: "パソコン"
+2026-07-23 17:25:30,096 [INFO] llm_interpreter: LLM解釈: パソコン -> unknown
+2026-07-23 17:25:30,099 [WARNING] command_executor: LLMが未知のアクションを返しました: unknown
+2026-07-23 17:25:34,111 [INFO] voice_recognizer: コマンド認識: Spotify で曲を流して
+2026-07-23 17:25:34,112 [INFO] command_executor: LLM解釈を試行: "Spotify で曲を流して"
+2026-07-23 17:25:35,631 [INFO] llm_interpreter: LLM解釈: Spotify で曲を流して -> launch_app
+2026-07-23 17:25:35,655 [INFO] command_executor: Webページを開きました: https://open.spotify.com
+2026-07-23 17:25:35,656 [INFO] command_executor: LLMコマンド実行完了: launch_app
+2026-07-23 17:25:47,446 [INFO] __main__: ウェイクワードを検出: 再生してパソコン 再生して
+2026-07-23 17:25:48,618 [INFO] command_executor: LLM解釈を試行: "再生してパソコン 再生して"
+2026-07-23 17:25:56,212 [INFO] llm_interpreter: LLM解釈: 再生してパソコン 再生して -> unknown
+2026-07-23 17:25:56,213 [WARNING] command_executor: LLMが未知のアクションを返しました: unknown
+2026-07-23 17:25:59,330 [INFO] voice_recognizer: コマンド認識: パソコン
+2026-07-23 17:25:59,330 [INFO] command_executor: LLM解釈を試行: "パソコン"
+2026-07-23 17:26:04,495 [INFO] llm_interpreter: LLM解釈: パソコン -> unknown
+2026-07-23 17:26:04,497 [WARNING] command_executor: LLMが未知のアクションを返しました: unknown
+2026-07-23 17:26:11,727 [INFO] __main__: ウェイクワードを検出: パソコン
+2026-07-23 17:26:12,895 [INFO] command_executor: LLM解釈を試行: "パソコン"
+2026-07-23 17:26:21,118 [INFO] llm_interpreter: LLM解釈: パソコン -> unknown
+2026-07-23 17:26:21,119 [WARNING] command_executor: LLMが未知のアクションを返しました: unknown
+2026-07-23 17:26:35,018 [INFO] __main__: ウェイクワードを検出: パソコン
+2026-07-23 17:26:36,188 [INFO] command_executor: LLM解釈を試行: "パソコン"
+2026-07-23 17:26:45,531 [INFO] llm_interpreter: LLM解釈: パソコン -> unknown
+2026-07-23 17:26:45,532 [WARNING] command_executor: LLMが未知のアクションを返しました: unknown
+2026-07-23 17:26:52,257 [INFO] voice_recognizer: コマンド認識: 設定を起動して
+2026-07-23 17:26:52,269 [INFO] command_executor: 設定を開きました: ms-settings:
+2026-07-23 17:26:52,270 [INFO] command_executor: 汎用コマンド一致: True
