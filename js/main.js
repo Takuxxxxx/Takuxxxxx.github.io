@@ -67,7 +67,7 @@ function wrapFadeIn(html) {
       case 'works': renderWorks(app); break;
       case 'work': renderWorkDetail(app, rest[0]); break;
       case 'contact': renderContact(app); break;
-      case 'admin': renderAdmin(app); break;
+
       default: renderNotFound(app);
     }
 
@@ -96,6 +96,7 @@ function renderHome(app) {
           <a href="#works" class="btn btn-primary">作品を見る</a>
           <a href="#contact" class="btn btn-outline">SNS</a>
         </div>
+        <button class="fab" onclick="showAddModal()" title="作品を追加">+</button>
       </div>
     </section>
   `);
@@ -143,7 +144,10 @@ function renderWorkDetail(app, id) {
       <a href="#works" class="work-detail-back">← Back to Works</a>
       <div class="work-detail-header">
         <div class="work-detail-cat">${escapeHtml(p.category)}</div>
-        <h1 class="work-detail-title">${escapeHtml(p.title)}</h1>
+        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px">
+          <h1 class="work-detail-title" style="margin-bottom:0">${escapeHtml(p.title)}</h1>
+          <button class="edit-btn" onclick="showEditModal('${p.id}')">✏️ 編集</button>
+        </div>
         <div class="work-detail-meta">${p.date || ''}</div>
       </div>
       <div class="work-detail-thumb">
@@ -212,38 +216,8 @@ function renderNotFound(app) {
   `);
 }
 
-/* Admin */
+/* Admin Modal */
 const ADMIN_KEY = 'portfolio_admin';
-
-function renderAdmin(app) {
-  const saved = JSON.parse(localStorage.getItem(ADMIN_KEY) || '{}');
-
-  if (!saved.token || !saved.repo) {
-    app.innerHTML = wrapFadeIn(`
-      <div class="container" style="max-width:480px">
-        <div class="page-header">
-          <h1>Admin</h1>
-          <p>GitHub に接続して作品を追加</p>
-        </div>
-        <div class="admin-form">
-          <div class="admin-field">
-            <label>リポジトリ（例: username/username.github.io）</label>
-            <input type="text" id="adminRepo" class="admin-input" placeholder="owner/repo" value="${escapeHtml(saved.repo || '')}">
-          </div>
-          <div class="admin-field">
-            <label>GitHub Personal Access Token</label>
-            <input type="password" id="adminToken" class="admin-input" placeholder="ghp_..." value="${escapeHtml(saved.token || '')}">
-            <p style="font-size:0.8rem;color:var(--text-tertiary);margin-top:4px">設定 → Developer settings → Personal access tokens → Fine-grained tokens（repo の書き込み権限が必要）</p>
-          </div>
-          <button onclick="adminLogin()" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px">接続</button>
-        </div>
-      </div>
-    `);
-    return;
-  }
-
-  renderAdminForm(app, saved);
-}
 
 function utf8ToBase64(str) {
   const bytes = new TextEncoder().encode(str);
@@ -252,93 +226,151 @@ function utf8ToBase64(str) {
   return btoa(bin);
 }
 
+function closeModal() {
+  const el = document.querySelector('.modal-overlay');
+  if (el) el.remove();
+}
+
+function showModal(html) {
+  closeModal();
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal()">×</button>
+      ${html}
+    </div>
+  `;
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+  document.body.appendChild(overlay);
+}
+
+function showLoginModal() {
+  const saved = JSON.parse(localStorage.getItem(ADMIN_KEY) || '{}');
+  showModal(`
+    <h2>GitHub に接続</h2>
+    <div class="admin-form">
+      <div class="admin-field">
+        <label>リポジトリ（例: username/username.github.io）</label>
+        <input type="text" id="adminRepo" class="admin-input" placeholder="owner/repo" value="${escapeHtml(saved.repo || '')}">
+      </div>
+      <div class="admin-field">
+        <label>GitHub Personal Access Token</label>
+        <input type="password" id="adminToken" class="admin-input" placeholder="ghp_..." value="${escapeHtml(saved.token || '')}">
+        <p style="font-size:0.8rem;color:var(--text-tertiary);margin-top:4px">Settings → Developer settings → Personal access tokens → Fine-grained tokens（repo 書き込み権限）</p>
+      </div>
+      <button onclick="adminLogin()" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px">接続</button>
+      <p id="adminStatus" style="text-align:center;margin-top:12px;font-size:0.9rem;color:var(--text-secondary)"></p>
+    </div>
+  `);
+}
+
 async function adminLogin() {
   const repo = document.getElementById('adminRepo').value.trim();
   const token = document.getElementById('adminToken').value.trim();
-  if (!repo || !token) return;
-
+  const status = document.getElementById('adminStatus');
+  if (!repo || !token) { status.textContent = 'すべて入力してください'; return; }
+  status.textContent = '接続中...';
   try {
     const r = await fetch(`https://api.github.com/repos/${repo}/contents/projects.json`, {
       headers: { Authorization: `token ${token}` },
     });
     if (r.status === 404) {
-      // empty repo -> create initial projects.json
       const initR = await fetch(`https://api.github.com/repos/${repo}/contents/projects.json`, {
         method: 'PUT',
         headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: 'initial commit',
-          content: utf8ToBase64(JSON.stringify(data, null, 2)),
-        }),
+        body: JSON.stringify({ message: 'initial commit', content: utf8ToBase64(JSON.stringify(data, null, 2)) }),
       });
-      if (!initR.ok) {
-        const err = await initR.text();
-        alert(`初期化失敗 (${initR.status}): ${err.slice(0, 200)}`);
-        return;
-      }
-    } else if (!r.ok) {
-      const errText = await r.text();
-      alert(`エラー (${r.status}): ${errText.slice(0, 200)}`);
-      return;
-    }
+      if (!initR.ok) { const err = await initR.text(); status.textContent = `初期化失敗 (${initR.status})`; return; }
+    } else if (!r.ok) { status.textContent = `エラー (${r.status})`; return; }
     localStorage.setItem(ADMIN_KEY, JSON.stringify({ token, repo }));
-    location.hash = '#admin';
-    location.reload();
-  } catch (e) {
-    alert('通信エラー: ' + e.message);
-  }
+    closeModal();
+  } catch (e) { status.textContent = '通信エラー: ' + e.message; }
 }
 
-function renderAdminForm(app, saved) {
-  app.innerHTML = wrapFadeIn(`
-    <div class="container" style="max-width:560px">
-      <div class="page-header">
-        <h1>Admin</h1>
-        <p>新規作品を追加</p>
+function getNextProjectId() {
+  const maxNum = data.projects.reduce((m, p) => {
+    const n = parseInt(p.id.replace('video-project-', ''));
+    return n > m ? n : m;
+  }, 0);
+  return `video-project-${maxNum + 1}`;
+}
+
+function showAddModal() {
+  const saved = JSON.parse(localStorage.getItem(ADMIN_KEY) || '{}');
+  if (!saved.token || !saved.repo) { showLoginModal(); return; }
+
+  showModal(`
+    <h2>作品を追加</h2>
+    <div class="admin-form">
+      <div class="admin-field">
+        <label>タイトル *</label>
+        <input type="text" id="aTitle" class="admin-input" placeholder="作品タイトル">
       </div>
-      <div class="admin-form">
-        <div class="admin-field">
-          <label>タイトル *</label>
-          <input type="text" id="aTitle" class="admin-input" placeholder="作品タイトル">
-        </div>
-        <div class="admin-field">
-          <label>説明（1行） *</label>
-          <input type="text" id="aDesc" class="admin-input" placeholder="短い説明文">
-        </div>
-        <div class="admin-row">
-          <div class="admin-field" style="flex:1">
-            <label>絵文字</label>
-            <input type="text" id="aEmoji" class="admin-input" placeholder="🎬" style="text-align:center;font-size:1.5rem">
-          </div>
-          <div class="admin-field" style="flex:2">
-            <label>日付</label>
-            <input type="text" id="aDate" class="admin-input" placeholder="${new Date().toISOString().slice(0,7)}">
-          </div>
-        </div>
-        <div class="admin-field">
-          <label>タグ（カンマ区切り）</label>
-          <input type="text" id="aTags" class="admin-input" placeholder="Premiere Pro, After Effects, カット編集">
-        </div>
-        <div class="admin-field">
-          <label>詳細説明</label>
-          <textarea id="aDetail" class="admin-input admin-textarea" placeholder="作品の詳細な説明"></textarea>
-        </div>
-        <div class="admin-field">
-          <label>リンク先URL</label>
-          <input type="text" id="aLinkUrl" class="admin-input" placeholder="https://x.com/...">
-        </div>
-        <div class="admin-field">
-          <label>リンクラベル</label>
-          <input type="text" id="aLinkLabel" class="admin-input" placeholder="Xで見る">
-        </div>
-        <button onclick="adminSubmit()" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px">
-          GitHub に追加する
-        </button>
-        <p id="adminStatus" style="text-align:center;margin-top:12px;font-size:0.9rem;color:var(--text-secondary)"></p>
+      <div class="admin-field">
+        <label>リンクURL</label>
+        <input type="text" id="aLinkUrl" class="admin-input" placeholder="https://x.com/...">
       </div>
-      <div style="text-align:center;margin-top:24px">
-        <a href="#admin" onclick="adminLogout()" style="color:var(--text-tertiary);font-size:0.85rem">接続を解除</a>
+      <div class="admin-field">
+        <label>リンクラベル</label>
+        <input type="text" id="aLinkLabel" class="admin-input" placeholder="Xで見る">
       </div>
+      <button onclick="adminSubmit()" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px">GitHub に追加</button>
+      <p id="adminStatus" style="text-align:center;margin-top:12px;font-size:0.9rem;color:var(--text-secondary)"></p>
+    </div>
+    <div style="text-align:center;margin-top:16px">
+      <a href="#" onclick="showLoginModal();return false" style="color:var(--text-tertiary);font-size:0.85rem">接続先を変更</a>
+    </div>
+  `);
+  setTimeout(() => document.getElementById('aTitle')?.focus(), 100);
+}
+
+function showEditModal(id) {
+  const saved = JSON.parse(localStorage.getItem(ADMIN_KEY) || '{}');
+  if (!saved.token || !saved.repo) { showLoginModal(); return; }
+
+  const p = data.projects.find(proj => proj.id === id);
+  if (!p) return;
+
+  showModal(`
+    <h2>作品を編集</h2>
+    <div class="admin-form">
+      <div class="admin-field">
+        <label>タイトル *</label>
+        <input type="text" id="aTitle" class="admin-input" value="${escapeHtml(p.title)}">
+      </div>
+      <div class="admin-field">
+        <label>説明（1行） *</label>
+        <input type="text" id="aDesc" class="admin-input" value="${escapeHtml(p.description)}">
+      </div>
+      <div class="admin-row">
+        <div class="admin-field" style="flex:1">
+          <label>絵文字</label>
+          <input type="text" id="aEmoji" class="admin-input" value="${escapeHtml(p.emoji || '🎬')}" style="text-align:center;font-size:1.5rem">
+        </div>
+        <div class="admin-field" style="flex:2">
+          <label>日付</label>
+          <input type="text" id="aDate" class="admin-input" value="${escapeHtml(p.date || '')}">
+        </div>
+      </div>
+      <div class="admin-field">
+        <label>タグ（カンマ区切り）</label>
+        <input type="text" id="aTags" class="admin-input" value="${escapeHtml((p.tags || []).join(', '))}">
+      </div>
+      <div class="admin-field">
+        <label>詳細説明</label>
+        <textarea id="aDetail" class="admin-input admin-textarea">${escapeHtml(p.details || p.description)}</textarea>
+      </div>
+      <div class="admin-field">
+        <label>リンク先URL</label>
+        <input type="text" id="aLinkUrl" class="admin-input" value="${escapeHtml((p.links && p.links[0]) ? p.links[0].url : '')}">
+      </div>
+      <div class="admin-field">
+        <label>リンクラベル</label>
+        <input type="text" id="aLinkLabel" class="admin-input" value="${escapeHtml((p.links && p.links[0]) ? p.links[0].label : '')}">
+      </div>
+      <button onclick="adminSubmitEdit('${id}')" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px">保存</button>
+      <p id="adminStatus" style="text-align:center;margin-top:12px;font-size:0.9rem;color:var(--text-secondary)"></p>
     </div>
   `);
 }
@@ -348,31 +380,13 @@ function adminLogout() {
   location.reload();
 }
 
-async function adminSubmit() {
-  const title = document.getElementById('aTitle').value.trim();
-  const desc = document.getElementById('aDesc').value.trim();
-  const emoji = document.getElementById('aEmoji').value.trim() || '🎬';
-  const date = document.getElementById('aDate').value.trim() || new Date().toISOString().slice(0,7);
-  const tagsRaw = document.getElementById('aTags').value.trim();
-  const detail = document.getElementById('aDetail').value.trim() || desc;
-  const linkUrl = document.getElementById('aLinkUrl').value.trim();
-  const linkLabel = document.getElementById('aLinkLabel').value.trim();
-
-  if (!title || !desc) { alert('タイトルと説明は必須です'); return; }
-
-  const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
-  const links = (linkUrl && linkLabel) ? [{ label: linkLabel, url: linkUrl }] : [];
-  const n = data.projects.length + 1;
-  const newId = `video-project-${n}`;
-
+async function adminCommit(updateFn) {
+  const saved = JSON.parse(localStorage.getItem(ADMIN_KEY) || '{}');
+  const { token, repo } = saved;
   const status = document.getElementById('adminStatus');
   status.textContent = '送信中...';
 
-  const saved = JSON.parse(localStorage.getItem(ADMIN_KEY) || '{}');
-  const { token, repo } = saved;
-
   try {
-    // fetch current file
     const getR = await fetch(`https://api.github.com/repos/${repo}/contents/projects.json`, {
       headers: { Authorization: `token ${token}` },
     });
@@ -383,36 +397,58 @@ async function adminSubmit() {
     for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
     const currentData = JSON.parse(new TextDecoder().decode(bytes));
 
-    // add new project
-    currentData.projects.push({
-      id: newId, title, category: 'video', emoji, description: desc,
-      details: detail, tags, date, links,
-    });
+    updateFn(currentData);
 
-    // commit
     const newContent = utf8ToBase64(JSON.stringify(currentData, null, 2));
     const putR = await fetch(`https://api.github.com/repos/${repo}/contents/projects.json`, {
       method: 'PUT',
       headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message: `add: ${title}`,
-        content: newContent,
-        sha: file.sha,
-      }),
+      body: JSON.stringify({ message: 'update projects.json', content: newContent, sha: file.sha }),
     });
     if (!putR.ok) throw new Error('Commit failed');
 
-    status.textContent = '追加完了！ 数分後にサイトに反映されます。';
+    status.textContent = '完了！ 数分後に反映されます。';
     status.style.color = 'var(--accent)';
-    document.getElementById('aTitle').value = '';
-    document.getElementById('aDesc').value = '';
-    document.getElementById('aEmoji').value = '';
-    document.getElementById('aTags').value = '';
-    document.getElementById('aDetail').value = '';
-    document.getElementById('aLinkUrl').value = '';
-    document.getElementById('aLinkLabel').value = '';
+    setTimeout(closeModal, 2000);
   } catch (e) {
     status.textContent = 'エラーが発生しました。トークンとリポジトリ設定を確認してください。';
     status.style.color = '#e53e3e';
   }
+}
+
+async function adminSubmit() {
+  const title = document.getElementById('aTitle').value.trim();
+  const linkUrl = document.getElementById('aLinkUrl').value.trim();
+  const linkLabel = document.getElementById('aLinkLabel').value.trim();
+  if (!title) { alert('タイトルは必須です'); return; }
+  const links = (linkUrl && linkLabel) ? [{ label: linkLabel, url: linkUrl }] : [];
+
+  adminCommit((currentData) => {
+    currentData.projects.push({
+      id: getNextProjectId(), title, category: 'video',
+      emoji: '🎬', description: title,
+      details: '', tags: [], date: new Date().toISOString().slice(0, 7),
+      links,
+    });
+  });
+}
+
+async function adminSubmitEdit(id) {
+  const title = document.getElementById('aTitle').value.trim();
+  const desc = document.getElementById('aDesc').value.trim();
+  const emoji = document.getElementById('aEmoji').value.trim() || '🎬';
+  const date = document.getElementById('aDate').value.trim();
+  const tagsRaw = document.getElementById('aTags').value.trim();
+  const detail = document.getElementById('aDetail').value.trim() || desc;
+  const linkUrl = document.getElementById('aLinkUrl').value.trim();
+  const linkLabel = document.getElementById('aLinkLabel').value.trim();
+  if (!title || !desc) { alert('タイトルと説明は必須です'); return; }
+  const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
+  const links = (linkUrl && linkLabel) ? [{ label: linkLabel, url: linkUrl }] : [];
+
+  adminCommit((currentData) => {
+    const idx = currentData.projects.findIndex(p => p.id === id);
+    if (idx === -1) return;
+    currentData.projects[idx] = { ...currentData.projects[idx], title, description: desc, emoji, date, tags, details: detail, links };
+  });
 }
