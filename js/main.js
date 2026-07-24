@@ -340,6 +340,7 @@ async function updateCardThumbnails() {
           img.src = thumbUrl;
           img.alt = p.title || '';
           img.loading = 'lazy';
+          img.onerror = function() { ytThumbFallback(this); };
           img.style.cssText = 'width:100%;height:100%;object-fit:cover;position:absolute;inset:0';
           const delBtn = thumb.querySelector('.card-del-btn');
           if (delBtn) thumb.insertBefore(img, delBtn);
@@ -358,9 +359,16 @@ function autoThumb(p) {
   return '';
 }
 
+function ytThumbFallback(img) {
+  const src = img.src;
+  if (src.includes('maxresdefault')) { img.src = src.replace('maxresdefault', 'hqdefault'); return; }
+  if (src.includes('hqdefault')) { img.src = src.replace('hqdefault', 'mqdefault'); return; }
+  img.onerror = null;
+}
+
 function projectCard(p) {
   const thumbUrl = p.thumbnail || autoThumb(p);
-  const thumb = thumbUrl ? `<img src="${escapeHtml(thumbUrl)}" alt="${escapeHtml(p.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">` : '';
+  const thumb = thumbUrl ? `<img src="${escapeHtml(thumbUrl)}" alt="${escapeHtml(p.title)}" loading="lazy" onerror="ytThumbFallback(this)" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">` : '';
   const saved = JSON.parse(localStorage.getItem(ADMIN_KEY) || '{}');
   const isAdmin = saved.token && saved.repo;
   return `
