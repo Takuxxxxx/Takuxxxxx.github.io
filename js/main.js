@@ -50,7 +50,11 @@ function wrapFadeIn(html) {
     const res = await fetch('projects.json?_=' + Date.now());
     data = await res.json();
   } catch {
-    document.getElementById('app').innerHTML = '<div class="loading" style="color:var(--text-secondary);padding:80px 24px;text-align:center;">Failed to load data.</div>';
+    document.getElementById('app').innerHTML = `<div class="loading" style="color:var(--text-secondary);padding:80px 24px;text-align:center;">
+      <p style="font-size:1.1rem;margin-bottom:8px">データの読み込みに失敗しました</p>
+      <p style="font-size:0.85rem;margin-bottom:24px">ネットワーク接続を確認して、もう一度お試しください</p>
+      <button onclick="location.reload()" class="btn btn-primary">再読み込み</button>
+    </div>`;
     return;
   }
 
