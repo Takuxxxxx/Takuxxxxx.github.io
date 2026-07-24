@@ -124,25 +124,43 @@ function renderWorks(app) {
 function enableBatchSelect() {
   const grid = document.querySelector('.works-grid');
   if (!grid) return;
-  let startX, startY, sel, isDragging = false;
+  let startX, startY, isDragging = false;
   const selBox = document.createElement('div');
   selBox.className = 'sel-rect';
-  function onMouseDown(e) {
-    if (e.button !== 0 || e.target.closest('.card-del-btn')) return;
-    const rect = grid.getBoundingClientRect();
-    startX = e.clientX - rect.left + grid.scrollLeft;
-    startY = e.clientY - rect.top + grid.scrollTop;
+  const bar = document.createElement('div');
+  bar.className = 'sel-bar';
+  bar.innerHTML = '<span class="sel-bar-count"></span><button class="sel-bar-del btn btn-primary" style="margin:0">まとめて削除</button>';
+  bar.querySelector('.sel-bar-del').onclick = () => {
+    const ids = Array.from(document.querySelectorAll('.work-card.selected')).map(c => c.getAttribute('href')?.replace('#work/', '')).filter(Boolean);
+    if (!ids.length || !confirm(`選択した${ids.length}件をすべて削除しますか？`)) return;
+    adminCommit((currentData) => { currentData.projects = currentData.projects.filter(p => !ids.includes(p.id)); });
+    if (bar.parentNode) bar.parentNode.removeChild(bar);
+  };
+
+  function updateBar() {
+    const n = document.querySelectorAll('.work-card.selected').length;
+    if (n) { bar.querySelector('.sel-bar-count').textContent = `${n}件選択中`; document.body.appendChild(bar); }
+    else if (bar.parentNode) bar.parentNode.removeChild(bar);
+  }
+
+  grid.addEventListener('mousedown', (e) => {
+    if (e.button !== 0 || e.target.closest('.card-del-btn, .work-card')) return;
+    e.preventDefault();
+    const r = grid.getBoundingClientRect();
+    startX = e.clientX - r.left + grid.scrollLeft;
+    startY = e.clientY - r.top + grid.scrollTop;
     isDragging = false;
     selBox.style.left = startX + 'px'; selBox.style.top = startY + 'px';
     selBox.style.width = '0'; selBox.style.height = '0';
     grid.appendChild(selBox);
+    document.body.classList.add('sel-active');
     document.addEventListener('mousemove', onMove);
     document.addEventListener('mouseup', onUp);
-  }
+  });
+
   function onMove(e) {
-    const rect = grid.getBoundingClientRect();
-    const cx = e.clientX - rect.left + grid.scrollLeft;
-    const cy = e.clientY - rect.top + grid.scrollTop;
+    const r = grid.getBoundingClientRect();
+    const cx = e.clientX - r.left + grid.scrollLeft, cy = e.clientY - r.top + grid.scrollTop;
     const dx = cx - startX, dy = cy - startY;
     if (!isDragging && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) isDragging = true;
     if (!isDragging) return;
@@ -150,33 +168,41 @@ function enableBatchSelect() {
     selBox.style.top = Math.min(startY, cy) + 'px';
     selBox.style.width = Math.abs(dx) + 'px';
     selBox.style.height = Math.abs(dy) + 'px';
+    const sr = selBox.getBoundingClientRect();
+    document.querySelectorAll('.work-card').forEach(c => {
+      const cr = c.getBoundingClientRect();
+      c.classList.toggle('selected', cr.right > sr.left && cr.left < sr.right && cr.bottom > sr.top && cr.top < sr.bottom);
+    });
+    updateBar();
   }
-  function onUp(e) {
+
+  function onUp() {
     document.removeEventListener('mousemove', onMove);
     document.removeEventListener('mouseup', onUp);
+    document.body.classList.remove('sel-active');
     if (selBox.parentNode) selBox.parentNode.removeChild(selBox);
-    if (!isDragging) return;
-    const sr = selBox.getBoundingClientRect();
-    document.querySelectorAll('.work-card').forEach(card => {
-      const cr = card.getBoundingClientRect();
-      if (cr.right > sr.left && cr.left < sr.right && cr.bottom > sr.top && cr.top < sr.bottom) {
-        card.classList.add('selected');
-      }
-    });
+    if (isDragging) updateBar();
   }
-  grid.addEventListener('mousedown', onMouseDown);
-  document.addEventListener('keydown', function onKey(e) {
+
+  grid.addEventListener('click', (e) => {
+    if (!e.target.closest('.work-card, .card-del-btn') && !isDragging) {
+      document.querySelectorAll('.work-card.selected').forEach(c => c.classList.remove('selected'));
+      updateBar();
+    }
+  });
+
+  grid.addEventListener('dragstart', (e) => e.preventDefault());
+  document.addEventListener('keydown', (e) => {
     if (e.key !== 'Delete' && e.key !== 'Backspace') return;
     const sel = document.querySelectorAll('.work-card.selected');
     if (!sel.length) return;
     e.preventDefault();
-    if (!confirm(`選択した${sel.length}件を削除しますか？`)) return;
     const ids = Array.from(sel).map(c => c.getAttribute('href')?.replace('#work/', '')).filter(Boolean);
-    if (!ids.length) return;
-    adminCommit((currentData) => {
-      currentData.projects = currentData.projects.filter(p => !ids.includes(p.id));
-    });
+    if (!ids.length || !confirm(`選択した${ids.length}件を削除しますか？`)) return;
+    adminCommit((currentData) => { currentData.projects = currentData.projects.filter(p => !ids.includes(p.id)); });
+    if (bar.parentNode) bar.parentNode.removeChild(bar);
   });
+  document.addEventListener('contextmenu', (e) => { if (document.body.classList.contains('sel-active')) e.preventDefault(); });
 }
 
 async function updateCardThumbnails() {
