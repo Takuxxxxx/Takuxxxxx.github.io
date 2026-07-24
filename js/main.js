@@ -538,20 +538,40 @@ function utf8ToBase64(str) {
 function closeModal() {
   const el = document.querySelector('.modal-overlay');
   if (el) el.remove();
+  document.removeEventListener('keydown', _modalKeyHandler);
 }
+
+let _modalKeyHandler = null;
 
 function showModal(html) {
   closeModal();
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
   overlay.innerHTML = `
-    <div class="modal">
-      <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal" role="dialog" aria-modal="true">
+      <button class="modal-close" onclick="closeModal()" aria-label="閉じる">×</button>
       ${html}
     </div>
   `;
   overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+
+  _modalKeyHandler = (e) => {
+    if (e.key === 'Escape') { closeModal(); return; }
+    if (e.key === 'Tab') {
+      const modal = overlay.querySelector('.modal');
+      const focusable = modal.querySelectorAll('input, button, textarea, select, a[href], [tabindex]:not([tabindex="-1"])');
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  };
+  document.addEventListener('keydown', _modalKeyHandler);
+
   document.body.appendChild(overlay);
+  const firstInput = overlay.querySelector('input, button:not(.modal-close), textarea');
+  if (firstInput) setTimeout(() => firstInput.focus(), 100);
 }
 
 function showLoginModal() {
