@@ -48,14 +48,14 @@ function wrapFadeIn(html) {
   });
 
   function updateActiveNav(hash) {
-    const page = hash.replace('#', '').split('/')[0] || 'home';
+    const page = hash.replace('#', '').split('/')[0] || 'works';
     document.querySelectorAll('[data-nav]').forEach(link => {
       link.classList.toggle('active', link.getAttribute('href') === `#${page}`);
     });
   }
 
   function router() {
-    const hash = location.hash || '#home';
+    const hash = location.hash || '#works';
     updateActiveNav(hash);
     const [page, ...rest] = hash.replace('#', '').split('/');
     const app = document.getElementById('app');
@@ -63,7 +63,6 @@ function wrapFadeIn(html) {
     if (loading) loading.style.display = 'none';
 
     switch (page) {
-      case 'home': renderHome(app); break;
       case 'works': renderWorks(app); break;
       case 'work': renderWorkDetail(app, rest[0]); break;
       case 'contact': renderContact(app); break;
@@ -81,8 +80,6 @@ function wrapFadeIn(html) {
 
 function renderHome(app) {
   const p = data.profile;
-  const saved = JSON.parse(localStorage.getItem(ADMIN_KEY) || '{}');
-  const isAdmin = saved.token && saved.repo;
   app.innerHTML = wrapFadeIn(`
     <section class="hero">
       <div class="hero-glow hero-glow-1"></div>
@@ -98,7 +95,6 @@ function renderHome(app) {
           <a href="#works" class="btn btn-primary">作品を見る</a>
           <a href="#contact" class="btn btn-outline">SNS</a>
         </div>
-        ${isAdmin ? '<button class="fab" onclick="showAddModal()" title="作品を追加">+</button>' : ''}
       </div>
     </section>
   `);
