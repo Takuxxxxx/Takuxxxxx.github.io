@@ -1,5 +1,24 @@
 let data = null;
 
+(function initTheme() {
+  const key = 'portfolio_theme';
+  const saved = localStorage.getItem(key);
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const dark = saved ? saved === 'dark' : prefersDark;
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  const btn = document.getElementById('themeToggle');
+  if (btn) {
+    btn.textContent = dark ? '☀️' : '🌙';
+    btn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const next = isDark ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem(key, next);
+      btn.textContent = next === 'dark' ? '☀️' : '🌙';
+    });
+  }
+})();
+
 function escapeHtml(str) {
   const div = document.createElement('div');
   div.textContent = str;
