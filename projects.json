@@ -82,7 +82,13 @@
       "details": "てすと",
       "tags": [],
       "date": "2026-07",
-      "links": []
+      "links": [
+        {
+          "label": "https://www.youtube.com/watch?v=AfQzohIx6UA",
+          "url": "https://www.youtube.com/watch?v=AfQzohIx6UA"
+        }
+      ],
+      "videoUrl": "https://www.youtube.com/watch?v=AfQzohIx6UA"
     }
   ]
 }
