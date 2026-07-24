@@ -122,8 +122,9 @@ function renderWorks(app) {
 }
 
 function enableBatchSelect() {
-  const grid = document.querySelector('.works-grid');
-  if (!grid) return;
+  if (window._batchSelectInited) return;
+  window._batchSelectInited = true;
+
   let startX, startY, isDragging = false, _selectionLocked = false;
   const selBox = document.createElement('div');
   selBox.className = 'sel-rect';
@@ -151,16 +152,12 @@ function enableBatchSelect() {
 
   function isOnCard(el) { return !!el.closest('.work-card'); }
 
-  grid.addEventListener('mousedown', (e) => {
-    if (e.button !== 0) return;
+  document.addEventListener('mousedown', (e) => {
+    if (!document.querySelector('.works-grid') || e.button !== 0) return;
     if (isOnCard(e.target) && !e.target.closest('.card-del-btn')) {
-      if (document.querySelector('.work-card.selected')) {
-        // Card click while selection is active → clear selection then let navigation happen
-        clearSelection();
-      }
+      if (document.querySelector('.work-card.selected')) clearSelection();
       return;
     }
-    // Gap mousedown: clear previous selection before starting new drag
     clearSelection();
     e.preventDefault();
     startX = e.clientX; startY = e.clientY;
@@ -195,29 +192,28 @@ function enableBatchSelect() {
     document.removeEventListener('mouseup', onUp);
     document.body.classList.remove('sel-active');
     if (selBox.parentNode) selBox.parentNode.removeChild(selBox);
+    if (!document.querySelector('.works-grid')) { isDragging = false; return; }
     if (isDragging) {
-      // Actual drag → lock selection, keep bar
       _selectionLocked = true;
       updateBar();
     } else {
-      // Barely moved → treat as gap click → clear selection
       clearSelection();
     }
     isDragging = false;
   }
 
-  grid.addEventListener('click', (e) => {
-    if (_selectionLocked) {
-      // click immediately after drag → consume flag, do nothing
-      _selectionLocked = false;
-      return;
-    }
-    if (!isOnCard(e.target) && !e.target.closest('.card-del-btn')) {
+  document.addEventListener('click', (e) => {
+    if (!document.querySelector('.works-grid')) return;
+    if (_selectionLocked) { _selectionLocked = false; return; }
+    if (!isOnCard(e.target) && !e.target.closest('.card-del-btn') && !e.target.closest('.sel-bar')) {
       clearSelection();
     }
   });
 
-  grid.addEventListener('dragstart', (e) => e.preventDefault());
+  document.addEventListener('dragstart', (e) => {
+    if (document.querySelector('.works-grid')) e.preventDefault();
+  });
+
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Delete' && e.key !== 'Backspace') return;
     const sel = document.querySelectorAll('.work-card.selected');
@@ -226,9 +222,12 @@ function enableBatchSelect() {
     const ids = Array.from(sel).map(c => c.getAttribute('href')?.replace('#work/', '')).filter(Boolean);
     if (!ids.length || !confirm(`選択した${ids.length}件を削除しますか？`)) return;
     adminCommit((currentData) => { currentData.projects = currentData.projects.filter(p => !ids.includes(p.id)); });
-    if (bar.parentNode) bar.parentNode.removeChild(bar);
+    clearSelection();
   });
-  document.addEventListener('contextmenu', (e) => { if (document.body.classList.contains('sel-active')) e.preventDefault(); });
+
+  document.addEventListener('contextmenu', (e) => {
+    if (document.body.classList.contains('sel-active')) e.preventDefault();
+  });
 }
 
 async function updateCardThumbnails() {
