@@ -124,7 +124,7 @@ function renderWorks(app) {
 function enableBatchSelect() {
   const grid = document.querySelector('.works-grid');
   if (!grid) return;
-  let startX, startY, isDragging = false;
+  let startX, startY, isDragging = false, _selectionLocked = false;
   const selBox = document.createElement('div');
   selBox.className = 'sel-rect';
   const bar = document.createElement('div');
@@ -143,11 +143,25 @@ function enableBatchSelect() {
     else if (bar.parentNode) bar.parentNode.removeChild(bar);
   }
 
+  function clearSelection() {
+    document.querySelectorAll('.work-card.selected').forEach(c => c.classList.remove('selected'));
+    updateBar();
+    _selectionLocked = false;
+  }
+
   function isOnCard(el) { return !!el.closest('.work-card'); }
 
   grid.addEventListener('mousedown', (e) => {
     if (e.button !== 0) return;
-    if (isOnCard(e.target) && !e.target.closest('.card-del-btn')) return;
+    if (isOnCard(e.target) && !e.target.closest('.card-del-btn')) {
+      if (document.querySelector('.work-card.selected')) {
+        // Card click while selection is active → clear selection then let navigation happen
+        clearSelection();
+      }
+      return;
+    }
+    // Gap mousedown: clear previous selection before starting new drag
+    clearSelection();
     e.preventDefault();
     startX = e.clientX; startY = e.clientY;
     isDragging = false;
@@ -181,16 +195,25 @@ function enableBatchSelect() {
     document.removeEventListener('mouseup', onUp);
     document.body.classList.remove('sel-active');
     if (selBox.parentNode) selBox.parentNode.removeChild(selBox);
-    const wasDragging = isDragging;
+    if (isDragging) {
+      // Actual drag → lock selection, keep bar
+      _selectionLocked = true;
+      updateBar();
+    } else {
+      // Barely moved → treat as gap click → clear selection
+      clearSelection();
+    }
     isDragging = false;
-    if (wasDragging) updateBar();
   }
 
   grid.addEventListener('click', (e) => {
-    if (isDragging) return;
+    if (_selectionLocked) {
+      // click immediately after drag → consume flag, do nothing
+      _selectionLocked = false;
+      return;
+    }
     if (!isOnCard(e.target) && !e.target.closest('.card-del-btn')) {
-      document.querySelectorAll('.work-card.selected').forEach(c => c.classList.remove('selected'));
-      updateBar();
+      clearSelection();
     }
   });
 
