@@ -2,7 +2,8 @@ let data = null;
 
 (function initTheme() {
   const key = 'portfolio_theme';
-  const saved = localStorage.getItem(key);
+  let saved;
+  try { saved = localStorage.getItem(key); } catch {}
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   const dark = saved ? saved === 'dark' : prefersDark;
   document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
@@ -48,14 +49,10 @@ function wrapFadeIn(html) {
 (async function init() {
   try {
     const res = await fetch('projects.json?_=' + Date.now());
-    data = await res.json();
-  } catch {
-    document.getElementById('app').innerHTML = `<div class="loading" style="color:var(--text-secondary);padding:80px 24px;text-align:center;">
-      <p style="font-size:1.1rem;margin-bottom:8px">データの読み込みに失敗しました</p>
-      <p style="font-size:0.85rem;margin-bottom:24px">ネットワーク接続を確認して、もう一度お試しください</p>
-      <button onclick="location.reload()" class="btn btn-primary">再読み込み</button>
-    </div>`;
-    return;
+    if (res.ok) { data = await res.json(); }
+  } catch {}
+  if (!data) {
+    data = {"profile":{"name":"Your Name","tagline":"Video Editor / Creator","bio":"X（Twitter）で動画編集作品を発信中。\nカット編集・色調整・エフェクト・テロップ入れなど、動画全般の編集を手がけています。","email":"yourname@example.com"},"social":{"twitter":"https://x.com/takuch_fortnite","youtube":"https://www.youtube.com/@takuch-777","tiktok":"https://www.tiktok.com/@t4ku_vfx","github":""},"projects":[{"id":"video-project-7","title":"xのテストだよ","category":"video","emoji":"🎬","description":"gegeg","details":"gegeg","tags":[],"date":"2026-07","links":[{"label":"https://x.com/takuch_fortnite/status/2080095556286697875","url":"https://x.com/takuch_fortnite/status/2080095556286697875https://x.com/takuch_fortnite/status/2080095556286697875"}],"videoUrl":"https://x.com/takuch_fortnite/status/2080095556286697875"},{"id":"video-project-8","title":"てすとai","category":"video","emoji":"🎬","description":"てすと","details":"てすと","tags":[],"date":"2026-07","links":[{"label":"YouTubeで見る","url":"https://www.youtube.com/watch?v=AfQzohIx6UA"}],"videoUrl":"https://www.youtube.com/watch?v=AfQzohIx6UA"},{"id":"video-project-9","title":"てーすと","category":"video","emoji":"🎬","description":"てーすと","details":"","tags":[],"date":"2026-07","videoUrl":"https://www.youtube.com/watch?v=mQEU6vvtGQ4","links":[]},{"id":"video-project-11","title":"tesutttt","category":"video","emoji":"🎬","description":"tesutttt","details":"","tags":[],"date":"2026-07","links":[{"label":"https://x.com/takuch_fortnite/status/2079758458505822320","url":"https://x.com/takuch_fortnite/status/2079758458505822320"}]}]};
   }
 
   const nav = document.getElementById('nav');
@@ -100,29 +97,6 @@ function wrapFadeIn(html) {
   window.addEventListener('hashchange', router);
   router();
 })();
-
-function renderHome(app) {
-  const p = data.profile;
-  app.innerHTML = wrapFadeIn(`
-    <section class="hero">
-      <div class="hero-glow hero-glow-1"></div>
-      <div class="hero-glow hero-glow-2"></div>
-      <div class="hero-content">
-        <div class="hero-badge">Portfolio</div>
-        <h1 class="hero-name">
-          <span class="gradient">${escapeHtml(p.name)}</span>
-        </h1>
-        <p class="hero-sub">${escapeHtml(p.tagline)}</p>
-        <p class="hero-desc">${escapeHtml(p.bio).replace(/\n/g, '<br>')}</p>
-        <div class="hero-btns">
-          <a href="#works" class="btn btn-primary">作品を見る</a>
-          <a href="#contact" class="btn btn-outline">SNS</a>
-        </div>
-      </div>
-    </div>
-  `);
-
-}
 
 function renderWorks(app) {
   const projects = data.projects;
@@ -528,7 +502,7 @@ function renderNotFound(app) {
     <div class="not-found">
       <h2>404</h2>
       <p>お探しのページは見つかりませんでした</p>
-      <a href="#home" class="btn btn-primary">Homeに戻る</a>
+      <a href="#works" class="btn btn-primary">Worksに戻る</a>
     </div>
   `);
 }
@@ -748,7 +722,7 @@ async function adminCommit(updateFn) {
   const status = document.getElementById('adminStatus');
   const btn = document.getElementById('submitBtn');
   if (btn) { btn.disabled = true; btn.style.cursor = 'wait'; }
-  status.textContent = '送信中...';
+  if (status) status.textContent = '送信中...';
 
   let lastError;
   for (let attempt = 0; attempt < 3; attempt++) {
@@ -781,13 +755,12 @@ async function adminCommit(updateFn) {
       return;
     } catch (e) {
       lastError = e.message;
-      if (attempt < 2) { status.textContent = `リトライ中... (${attempt + 2}/3)`; continue; }
+      if (attempt < 2 && status) { status.textContent = `リトライ中... (${attempt + 2}/3)`; continue; }
       break;
     }
   }
   if (btn) { btn.disabled = false; btn.style.cursor = ''; }
-  status.textContent = '競合が発生しました。ページを再読み込みしてください。';
-  status.style.color = '#e53e3e';
+  if (status) { status.textContent = '競合が発生しました。ページを再読み込みしてください。'; status.style.color = '#e53e3e'; }
 }
 
 let _adminSubmitting = false;

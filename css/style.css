@@ -7,7 +7,7 @@
   --glass-border: rgba(255, 255, 255, 0.5);
   --text: #1d1d1f;
   --text-secondary: #6e6e73;
-  --text-tertiary: #8e8e93;
+  --text-tertiary: #6b6b70;
   --radius-sm: 12px;
   --radius-md: 20px;
   --radius-lg: 28px;
@@ -24,6 +24,8 @@
   --modal-overlay: rgba(0,0,0,0.3);
   --input-bg: #ffffff;
   --nav-hover: rgba(0,0,0,0.04);
+  --thumb-bg: linear-gradient(135deg, #e8e8ed, #f5f5f7);
+  --accent-text: #8B6914;
 }
 
 [data-theme="dark"] {
@@ -33,7 +35,7 @@
   --glass-border: rgba(255,255,255,0.08);
   --text: #f5f5f7;
   --text-secondary: #aeaeb2;
-  --text-tertiary: #7c7c80;
+  --text-tertiary: #a0a0a5;
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
   --shadow-md: 0 4px 20px rgba(0,0,0,0.3);
   --shadow-lg: 0 8px 40px rgba(0,0,0,0.4);
@@ -44,6 +46,8 @@
   --modal-overlay: rgba(0,0,0,0.6);
   --input-bg: #3a3a3c;
   --nav-hover: rgba(255,255,255,0.08);
+  --thumb-bg: linear-gradient(135deg, #2c2c2e, #3a3a3c);
+  --accent-text: #f0c040;
   color-scheme: dark;
 }
 
@@ -294,13 +298,33 @@ a { color: inherit; text-decoration: none; }
   box-shadow: var(--shadow-lg);
   border-color: var(--glass-border);
 }
-.work-card:hover .work-card-thumb img { transform: scale(1.08); }
+html[data-theme="dark"] .work-card {
+  border: none;
+  background: #2c2c2e;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25), 0 6px 28px rgba(0,0,0,0.15);
+}
+html[data-theme="dark"] .work-card:hover {
+  border: none;
+  background: #2c2c2e;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.35), 0 10px 40px rgba(0,0,0,0.2);
+}
+html[data-theme="dark"] .work-card-thumb::after {
+  content: none;
+}
+html[data-theme="dark"] .work-card-thumb {
+  background: #2c2c2e;
+}
+html[data-theme="dark"] .work-card.selected {
+  background: rgba(44,44,46,0.92);
+}
 .work-card.selected { outline: 3px solid var(--accent); outline-offset: -3px; background: rgba(212,175,55,0.08); }
 .sel-rect { position: fixed; z-index: 10; background: rgba(212,175,55,0.15); border: 1px solid var(--accent); pointer-events: none; }
 
 .work-card-thumb {
   aspect-ratio: 16/9;
-  background: linear-gradient(135deg, #e8e8ed, #f5f5f7);
+  background: var(--thumb-bg);
   display: flex; align-items: center; justify-content: center;
   font-size: 2.5rem; position: relative; overflow: hidden;
 }
@@ -325,7 +349,7 @@ a { color: inherit; text-decoration: none; }
 .work-card-cat {
   font-size: 0.7rem; font-weight: 600;
   text-transform: uppercase; letter-spacing: 0.1em;
-  color: var(--accent); margin-bottom: 6px;
+  color: var(--accent-text); margin-bottom: 6px;
 }
 .work-card-title { font-size: 1.15rem; font-weight: 650; letter-spacing: -0.01em; margin-bottom: 6px; }
 .work-card-desc {
@@ -350,10 +374,11 @@ a { color: inherit; text-decoration: none; }
   background: var(--glass); border: 1px solid var(--glass-border);
 }
 .work-detail-back:hover { color: var(--accent); background: var(--nav-hover); }
+[data-theme="dark"] .work-detail-back { border: none; box-shadow: 0 2px 12px rgba(0,0,0,0.3); }
 
 .work-detail-header { margin-bottom: 32px; }
 .work-detail-cat {
-  color: var(--accent); font-weight: 600;
+  color: var(--accent-text); font-weight: 600;
   font-size: 0.8rem; text-transform: uppercase;
   letter-spacing: 0.1em; margin-bottom: 4px;
 }
@@ -365,11 +390,12 @@ a { color: inherit; text-decoration: none; }
 
 .work-detail-thumb {
   aspect-ratio: 16/9; border-radius: var(--radius-md);
-  background: linear-gradient(135deg, #e8e8ed, #f5f5f7);
+  background: var(--thumb-bg);
   display: flex; align-items: center; justify-content: center;
   font-size: 4rem; margin-bottom: 32px;
   border: 1px solid var(--glass-border);
 }
+[data-theme="dark"] .work-detail-thumb { border: none; }
 
 .work-detail-glass {
   background: var(--glass);
@@ -379,6 +405,13 @@ a { color: inherit; text-decoration: none; }
   border-radius: var(--radius-md);
   padding: 28px;
   box-shadow: var(--shadow-sm);
+}
+[data-theme="dark"] .work-detail-glass {
+  border: none;
+  background: #2c2c2e;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25), 0 6px 28px rgba(0,0,0,0.15);
 }
 
 .work-detail-section { margin-bottom: 28px; }
