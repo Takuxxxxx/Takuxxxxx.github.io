@@ -136,7 +136,15 @@ async function updateCardThumbnails() {
           if (card) card.innerHTML = `<img src="${escapeHtml(thumbUrl)}" alt="" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">`;
         }
       }
-    } catch {}
+    } catch {
+      const card = document.querySelector(`.work-card[href="#work/${encodeURIComponent(p.id)}"]`);
+      if (card && !card.querySelector('.x-badge')) {
+        const badge = document.createElement('span');
+        badge.className = 'x-badge';
+        badge.textContent = '𝕏';
+        card.querySelector('.work-card-body')?.appendChild(badge);
+      }
+    }
   }
 }
 
@@ -265,7 +273,12 @@ async function renderWorkDetail(app, id) {
           }
         }
       }
-    } catch {}
+    } catch {
+      const el = document.getElementById('xPreview');
+      if (el) {
+        el.outerHTML = `<a href="${escapeHtml(linkUrl)}" target="_blank" rel="noopener" class="btn btn-primary" style="display:flex;justify-content:center;padding:20px 24px;font-size:1.1rem;border-radius:var(--radius-md);text-decoration:none">X（Twitter）で見る</a>`;
+      }
+    }
   }
 }
 
@@ -415,7 +428,7 @@ function showAddModal() {
         <label>リンクラベル</label>
         <input type="text" id="aLinkLabel" class="admin-input" placeholder="Xで見る">
       </div>
-      <button onclick="adminSubmit()" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px">GitHub に追加</button>
+      <button onclick="adminSubmit()" id="submitBtn" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px">GitHub に追加</button>
       <p id="adminStatus" style="text-align:center;margin-top:12px;font-size:0.9rem;color:var(--text-secondary)"></p>
     </div>
     <div style="text-align:center;margin-top:16px">
@@ -477,7 +490,7 @@ function showEditModal(id) {
         <label>リンクラベル</label>
         <input type="text" id="aLinkLabel" class="admin-input" value="${escapeHtml((p.links && p.links[0]) ? p.links[0].label : '')}">
       </div>
-      <button onclick="adminSubmitEdit('${id}')" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px">保存</button>
+      <button onclick="adminSubmitEdit('${id}')" id="submitBtn" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px">保存</button>
       <p id="adminStatus" style="text-align:center;margin-top:12px;font-size:0.9rem;color:var(--text-secondary)"></p>
       <div style="text-align:center;margin-top:16px;padding-top:16px;border-top:1px solid rgba(0,0,0,0.06)">
         <button onclick="adminDeleteProject('${id}')" style="background:none;border:none;color:#e53e3e;cursor:pointer;font-size:0.85rem;padding:8px">この作品を削除する</button>
@@ -495,36 +508,48 @@ async function adminCommit(updateFn) {
   const saved = JSON.parse(localStorage.getItem(ADMIN_KEY) || '{}');
   const { token, repo } = saved;
   const status = document.getElementById('adminStatus');
+  const btn = document.getElementById('submitBtn');
+  if (btn) { btn.disabled = true; btn.style.cursor = 'wait'; }
   status.textContent = '送信中...';
 
-  try {
-    const getR = await fetch(`https://api.github.com/repos/${repo}/contents/projects.json`, {
-      headers: { Authorization: `token ${token}` },
-    });
-    if (!getR.ok) throw new Error('Fetch failed');
-    const file = await getR.json();
-    const raw = atob(file.content.replace(/\n/g, ''));
-    const bytes = new Uint8Array(raw.length);
-    for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
-    const currentData = JSON.parse(new TextDecoder().decode(bytes));
+  let lastError;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const getR = await fetch(`https://api.github.com/repos/${repo}/contents/projects.json`, {
+        headers: { Authorization: `token ${token}` },
+      });
+      if (!getR.ok) throw new Error('Fetch failed');
+      const file = await getR.json();
+      const raw = atob(file.content.replace(/\n/g, ''));
+      const bytes = new Uint8Array(raw.length);
+      for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
+      const currentData = JSON.parse(new TextDecoder().decode(bytes));
 
-    updateFn(currentData);
+      updateFn(currentData);
 
-    const newContent = utf8ToBase64(JSON.stringify(currentData, null, 2));
-    const putR = await fetch(`https://api.github.com/repos/${repo}/contents/projects.json`, {
-      method: 'PUT',
-      headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: 'update projects.json', content: newContent, sha: file.sha }),
-    });
-    if (!putR.ok) throw new Error('Commit failed');
+      const newContent = utf8ToBase64(JSON.stringify(currentData, null, 2));
+      const putR = await fetch(`https://api.github.com/repos/${repo}/contents/projects.json`, {
+        method: 'PUT',
+        headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: 'update projects.json', content: newContent, sha: file.sha }),
+      });
+      if (putR.status === 409) { lastError = 'Conflict'; continue; }
+      if (!putR.ok) throw new Error('Commit failed');
 
-    data = currentData;
-    closeModal();
-    router();
-  } catch (e) {
-    status.textContent = 'エラーが発生しました。トークンとリポジトリ設定を確認してください。';
-    status.style.color = '#e53e3e';
+      data = currentData;
+      closeModal();
+      router();
+      if (btn) { btn.disabled = false; btn.style.cursor = ''; }
+      return;
+    } catch (e) {
+      lastError = e.message;
+      if (attempt < 2) { status.textContent = `リトライ中... (${attempt + 2}/3)`; continue; }
+      break;
+    }
   }
+  if (btn) { btn.disabled = false; btn.style.cursor = ''; }
+  status.textContent = '競合が発生しました。ページを再読み込みしてください。';
+  status.style.color = '#e53e3e';
 }
 
 async function adminSubmit() {

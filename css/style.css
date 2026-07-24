@@ -511,3 +511,6 @@ a { color: inherit; text-decoration: none; }
   .header-inner { padding: 0 16px; }
   .container { padding: 40px 16px; }
 }
+
+.btn:disabled { opacity: 0.5; cursor: wait; pointer-events: none; }
+.x-badge { display: inline-block; margin-top: 8px; font-size: 0.8rem; opacity: 0.4; }
