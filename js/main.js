@@ -28,30 +28,8 @@ function wrapFadeIn(html) {
 
 (async function init() {
   try {
-    const saved = JSON.parse(localStorage.getItem(ADMIN_KEY) || '{}');
-    let res;
-    if (saved.token && saved.repo) {
-      try {
-        const r = await fetch(`https://api.github.com/repos/${saved.repo}/contents/projects.json`, {
-          headers: { Authorization: `token ${saved.token}` },
-        });
-        if (r.ok) {
-          const file = await r.json();
-          const raw = atob(file.content.replace(/\n/g, ''));
-          const bytes = new Uint8Array(raw.length);
-          for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
-          data = JSON.parse(new TextDecoder().decode(bytes));
-        } else {
-          throw new Error('API not ok');
-        }
-      } catch {
-        res = await fetch('projects.json');
-        data = await res.json();
-      }
-    } else {
-      res = await fetch('projects.json');
-      data = await res.json();
-    }
+    const res = await fetch('projects.json?_=' + Date.now());
+    data = await res.json();
   } catch {
     document.getElementById('app').innerHTML = '<div class="loading" style="color:var(--text-secondary);padding:80px 24px;text-align:center;">Failed to load data.</div>';
     return;
