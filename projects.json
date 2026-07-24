@@ -19,7 +19,9 @@
       "emoji": "▶️",
       "description": "YouTubeリンクからの自動サムネイル + 再生デモ",
       "details": "これはYouTubeリンクの作品例です。Works一覧ではサムネイルが自動表示され、詳細ページでは動画がそのまま再生できます。",
-      "tags": ["デモ"],
+      "tags": [
+        "デモ"
+      ],
       "date": "2026-07",
       "links": [
         {
@@ -66,6 +68,17 @@
       "category": "video",
       "emoji": "🎬",
       "description": "gegeg",
+      "details": "",
+      "tags": [],
+      "date": "2026-07",
+      "links": []
+    },
+    {
+      "id": "video-project-8",
+      "title": "てすと",
+      "category": "video",
+      "emoji": "🎬",
+      "description": "てすと",
       "details": "",
       "tags": [],
       "date": "2026-07",
