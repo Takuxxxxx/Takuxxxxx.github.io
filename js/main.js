@@ -149,27 +149,25 @@ function enableBatchSelect() {
     if (e.button !== 0) return;
     if (isOnCard(e.target) && !e.target.closest('.card-del-btn')) return;
     e.preventDefault();
-    const r = grid.getBoundingClientRect();
-    startX = e.clientX - r.left + grid.scrollLeft;
-    startY = e.clientY - r.top + grid.scrollTop;
+    startX = e.clientX; startY = e.clientY;
     isDragging = false;
     selBox.style.left = startX + 'px'; selBox.style.top = startY + 'px';
     selBox.style.width = '0'; selBox.style.height = '0';
-    grid.appendChild(selBox);
+    document.body.appendChild(selBox);
     document.body.classList.add('sel-active');
     document.addEventListener('mousemove', onMove);
     document.addEventListener('mouseup', onUp);
   });
 
   function onMove(e) {
-    const r = grid.getBoundingClientRect();
-    const cx = e.clientX - r.left + grid.scrollLeft, cy = e.clientY - r.top + grid.scrollTop;
+    const cx = e.clientX, cy = e.clientY;
     const dx = cx - startX, dy = cy - startY;
     if (!isDragging && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) isDragging = true;
     if (!isDragging) return;
-    const l = Math.min(startX, cx), t = Math.min(startY, cy);
-    selBox.style.left = l + 'px'; selBox.style.top = t + 'px';
-    selBox.style.width = Math.abs(dx) + 'px'; selBox.style.height = Math.abs(dy) + 'px';
+    selBox.style.left = Math.min(startX, cx) + 'px';
+    selBox.style.top = Math.min(startY, cy) + 'px';
+    selBox.style.width = Math.abs(dx) + 'px';
+    selBox.style.height = Math.abs(dy) + 'px';
     const sr = selBox.getBoundingClientRect();
     document.querySelectorAll('.work-card').forEach(c => {
       const cr = c.getBoundingClientRect();
