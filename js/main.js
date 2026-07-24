@@ -81,6 +81,8 @@ function wrapFadeIn(html) {
 
 function renderHome(app) {
   const p = data.profile;
+  const saved = JSON.parse(localStorage.getItem(ADMIN_KEY) || '{}');
+  const isAdmin = saved.token && saved.repo;
   app.innerHTML = wrapFadeIn(`
     <section class="hero">
       <div class="hero-glow hero-glow-1"></div>
@@ -96,7 +98,7 @@ function renderHome(app) {
           <a href="#works" class="btn btn-primary">作品を見る</a>
           <a href="#contact" class="btn btn-outline">SNS</a>
         </div>
-        <button class="fab" onclick="showAddModal()" title="作品を追加">+</button>
+        ${isAdmin ? '<button class="fab" onclick="showAddModal()" title="作品を追加">+</button>' : ''}
       </div>
     </section>
   `);
@@ -217,7 +219,7 @@ function renderNotFound(app) {
 }
 
 function renderAdmin(app) {
-  location.hash = '#home';
+  location.hash = '#works';
 }
 
 /* Admin Modal */
