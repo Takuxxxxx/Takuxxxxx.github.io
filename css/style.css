@@ -217,6 +217,7 @@ a { color: inherit; text-decoration: none; }
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 20px;
   position: relative;
+  user-select: none; -webkit-user-select: none;
 }
 
 .work-card {
