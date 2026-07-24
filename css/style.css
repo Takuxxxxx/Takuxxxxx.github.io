@@ -250,6 +250,14 @@ a { color: inherit; text-decoration: none; }
   background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.02));
   pointer-events: none;
 }
+.card-del-btn {
+  position: absolute; top: 8px; right: 8px; z-index: 2;
+  background: rgba(0,0,0,0.5); border: none; border-radius: 50%;
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 0.9rem; opacity: 0; transition: opacity .2s;
+}
+.work-card:hover .card-del-btn { opacity: 1; }
+.card-del-btn:hover { background: rgba(200,50,50,0.8); }
 
 .work-card-body { padding: 20px; }
 .work-card-cat {

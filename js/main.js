@@ -151,10 +151,13 @@ function autoThumb(p) {
 function projectCard(p) {
   const thumbUrl = p.thumbnail || autoThumb(p);
   const thumb = thumbUrl ? `<img src="${escapeHtml(thumbUrl)}" alt="" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">` : '';
+  const saved = JSON.parse(localStorage.getItem(ADMIN_KEY) || '{}');
+  const isAdmin = saved.token && saved.repo;
   return `
     <a href="#work/${encodeURIComponent(p.id)}" class="work-card">
       <div class="work-card-thumb">
         ${thumb || `<span class="emoji">${p.emoji || '🎬'}</span>`}
+        ${isAdmin ? `<button class="card-del-btn" onclick="event.preventDefault();event.stopPropagation();if(confirm('「${escapeHtml(p.title)}」を削除しますか？'))adminDeleteProject('${p.id}')" title="削除">🗑</button>` : ''}
       </div>
       <div class="work-card-body">
         <div class="work-card-cat">${escapeHtml(p.category)}</div>
