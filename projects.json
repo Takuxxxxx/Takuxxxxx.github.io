@@ -19,10 +19,17 @@
       "emoji": "🎬",
       "description": "短い説明文をここに記載します。",
       "details": "ここに作品の詳細な説明を書きます。\n使用した編集ソフトや、こだわったポイントなどを自由に記述してください。",
-      "tags": ["Premiere Pro", "After Effects", "カット編集"],
+      "tags": [
+        "Premiere Pro",
+        "After Effects",
+        "カット編集"
+      ],
       "date": "2026-06",
       "links": [
-        { "label": "Xで見る", "url": "https://x.com/yourhandle/status/xxxxxxxx" }
+        {
+          "label": "Xで見る",
+          "url": "https://x.com/yourhandle/status/xxxxxxxx"
+        }
       ]
     },
     {
@@ -32,10 +39,17 @@
       "emoji": "🎥",
       "description": "こちらの作品は〇〇な動画です。",
       "details": "編集のポイントや制作背景など、自由に書いてください。\n複数行のテキストもそのまま反映されます。",
-      "tags": ["DaVinci Resolve", "色調整", "BGM編集"],
+      "tags": [
+        "DaVinci Resolve",
+        "色調整",
+        "BGM編集"
+      ],
       "date": "2026-05",
       "links": [
-        { "label": "Xで見る", "url": "https://x.com/yourhandle/status/xxxxxxxx" }
+        {
+          "label": "Xで見る",
+          "url": "https://x.com/yourhandle/status/xxxxxxxx"
+        }
       ]
     },
     {
@@ -45,10 +59,33 @@
       "emoji": "✂️",
       "description": "ショート動画編集作品です。",
       "details": "TikTok / YouTube Shorts / X用のショート動画。\n縦横比やテンポ感を意識した編集をしています。",
-      "tags": ["ショート動画", "テロップ", "BGM"],
+      "tags": [
+        "ショート動画",
+        "テロップ",
+        "BGM"
+      ],
       "date": "2026-04",
       "links": [
-        { "label": "Xで見る", "url": "https://x.com/yourhandle/status/xxxxxxxx" }
+        {
+          "label": "Xで見る",
+          "url": "https://x.com/yourhandle/status/xxxxxxxx"
+        }
+      ]
+    },
+    {
+      "id": "video-project-4",
+      "title": "Getaway Car",
+      "category": "video",
+      "emoji": "🎬",
+      "description": "Getaway Car",
+      "details": "",
+      "tags": [],
+      "date": "2026-07",
+      "links": [
+        {
+          "label": "https://x.com/takuch_fortnite/status/2080095556286697875",
+          "url": "https://x.com/takuch_fortnite/status/2080095556286697875"
+        }
       ]
     }
   ]
