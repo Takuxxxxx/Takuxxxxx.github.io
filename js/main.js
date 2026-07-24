@@ -339,6 +339,7 @@ async function updateCardThumbnails() {
           const img = document.createElement('img');
           img.src = thumbUrl;
           img.alt = p.title || '';
+          img.loading = 'lazy';
           img.style.cssText = 'width:100%;height:100%;object-fit:cover;position:absolute;inset:0';
           const delBtn = thumb.querySelector('.card-del-btn');
           if (delBtn) thumb.insertBefore(img, delBtn);
@@ -359,7 +360,7 @@ function autoThumb(p) {
 
 function projectCard(p) {
   const thumbUrl = p.thumbnail || autoThumb(p);
-  const thumb = thumbUrl ? `<img src="${escapeHtml(thumbUrl)}" alt="${escapeHtml(p.title)}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">` : '';
+  const thumb = thumbUrl ? `<img src="${escapeHtml(thumbUrl)}" alt="${escapeHtml(p.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">` : '';
   const saved = JSON.parse(localStorage.getItem(ADMIN_KEY) || '{}');
   const isAdmin = saved.token && saved.repo;
   return `
@@ -414,7 +415,7 @@ async function renderWorkDetail(app, id) {
   } else if (ve && ve.type === 'x') {
     previewHtml = `<div class="work-detail-thumb" id="xPreview"><span>${p.emoji || '🎬'}</span></div>`;
   } else if (thumbUrl) {
-    previewHtml = `<div class="work-detail-thumb" style="overflow:hidden"><img src="${escapeHtml(thumbUrl)}" alt="${escapeHtml(p.title)}" style="width:100%;height:100%;object-fit:cover"></div>`;
+    previewHtml = `<div class="work-detail-thumb" style="overflow:hidden"><img src="${escapeHtml(thumbUrl)}" alt="${escapeHtml(p.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover"></div>`;
   } else {
     previewHtml = `<div class="work-detail-thumb"><span>${p.emoji || '🎬'}</span></div>`;
   }
@@ -470,7 +471,7 @@ async function renderWorkDetail(app, id) {
           if (media.type === 'video' || media.type === 'gif') {
             html = `<div class="video-wrapper"><video src="${escapeHtml(media.url)}" controls playsinline style="width:100%;border-radius:var(--radius-md)" poster="${escapeHtml(media.thumbnail_url || '')}"></video></div>`;
           } else if (media.thumbnail_url) {
-            html = `<div class="work-detail-thumb" style="overflow:hidden"><img src="${escapeHtml(media.thumbnail_url)}" alt="${escapeHtml(p.title)}" style="width:100%;height:100%;object-fit:cover"></div>`;
+            html = `<div class="work-detail-thumb" style="overflow:hidden"><img src="${escapeHtml(media.thumbnail_url)}" alt="${escapeHtml(p.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover"></div>`;
           }
           if (html && el) el.outerHTML = html;
         }
