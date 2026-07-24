@@ -217,8 +217,7 @@ function renderNotFound(app) {
 }
 
 function renderAdmin(app) {
-  app.innerHTML = wrapFadeIn('<div style="min-height:60vh"></div>');
-  showAddModal();
+  location.hash = '#home';
 }
 
 /* Admin Modal */
