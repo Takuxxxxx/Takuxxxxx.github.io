@@ -118,6 +118,65 @@ function renderWorks(app) {
     </div>
   `);
   updateCardThumbnails();
+  if (JSON.parse(localStorage.getItem(ADMIN_KEY) || '{}').token) enableBatchSelect();
+}
+
+function enableBatchSelect() {
+  const grid = document.querySelector('.works-grid');
+  if (!grid) return;
+  let startX, startY, sel, isDragging = false;
+  const selBox = document.createElement('div');
+  selBox.className = 'sel-rect';
+  function onMouseDown(e) {
+    if (e.button !== 0 || e.target.closest('.card-del-btn')) return;
+    const rect = grid.getBoundingClientRect();
+    startX = e.clientX - rect.left + grid.scrollLeft;
+    startY = e.clientY - rect.top + grid.scrollTop;
+    isDragging = false;
+    selBox.style.left = startX + 'px'; selBox.style.top = startY + 'px';
+    selBox.style.width = '0'; selBox.style.height = '0';
+    grid.appendChild(selBox);
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  }
+  function onMove(e) {
+    const rect = grid.getBoundingClientRect();
+    const cx = e.clientX - rect.left + grid.scrollLeft;
+    const cy = e.clientY - rect.top + grid.scrollTop;
+    const dx = cx - startX, dy = cy - startY;
+    if (!isDragging && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) isDragging = true;
+    if (!isDragging) return;
+    selBox.style.left = Math.min(startX, cx) + 'px';
+    selBox.style.top = Math.min(startY, cy) + 'px';
+    selBox.style.width = Math.abs(dx) + 'px';
+    selBox.style.height = Math.abs(dy) + 'px';
+  }
+  function onUp(e) {
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+    if (selBox.parentNode) selBox.parentNode.removeChild(selBox);
+    if (!isDragging) return;
+    const sr = selBox.getBoundingClientRect();
+    document.querySelectorAll('.work-card').forEach(card => {
+      const cr = card.getBoundingClientRect();
+      if (cr.right > sr.left && cr.left < sr.right && cr.bottom > sr.top && cr.top < sr.bottom) {
+        card.classList.add('selected');
+      }
+    });
+  }
+  grid.addEventListener('mousedown', onMouseDown);
+  document.addEventListener('keydown', function onKey(e) {
+    if (e.key !== 'Delete' && e.key !== 'Backspace') return;
+    const sel = document.querySelectorAll('.work-card.selected');
+    if (!sel.length) return;
+    e.preventDefault();
+    if (!confirm(`選択した${sel.length}件を削除しますか？`)) return;
+    const ids = Array.from(sel).map(c => c.getAttribute('href')?.replace('#work/', '')).filter(Boolean);
+    if (!ids.length) return;
+    adminCommit((currentData) => {
+      currentData.projects = currentData.projects.filter(p => !ids.includes(p.id));
+    });
+  });
 }
 
 async function updateCardThumbnails() {
