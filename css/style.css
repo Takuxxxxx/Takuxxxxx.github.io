@@ -345,7 +345,7 @@ html[data-theme="dark"] .work-card.selected {
   user-select: none; -webkit-user-select: none;
 }
 .drag-handle:active { cursor: grabbing; }
-.work-card.dragging { opacity: 0.4; }
+.work-card.dragging { opacity: 0.4; pointer-events: none; }
 .work-card.drag-over { outline: 3px dashed var(--accent); outline-offset: -3px; }
 #dragLoading {
   position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);

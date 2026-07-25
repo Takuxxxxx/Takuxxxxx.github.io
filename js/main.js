@@ -318,72 +318,96 @@ function enableDragReorder() {
   if (!grid || grid.dataset.dragInit) return;
   grid.dataset.dragInit = '1';
 
+  let draggedEl = null;
   let draggedId = null;
+  let startY = 0;
+  let isDragging = false;
 
-  grid.addEventListener('dragstart', (e) => {
+  function onMouseDown(e) {
     const handle = e.target.closest('.drag-handle');
-    if (!handle) { e.preventDefault(); return; }
+    if (!handle) return;
+    e.preventDefault();
     const card = handle.closest('.work-card');
-    if (!card) { e.preventDefault(); return; }
-    draggedId = card.getAttribute('href')?.replace('#work/', '');
-    if (!draggedId) { e.preventDefault(); return; }
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', draggedId);
-    card.classList.add('dragging');
-  });
-
-  grid.addEventListener('dragend', () => {
-    document.querySelectorAll('.work-card').forEach(c => c.classList.remove('dragging', 'drag-over'));
-    draggedId = null;
-  });
-
-  grid.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    const card = e.target.closest('.work-card');
     if (!card) return;
+    draggedEl = card;
+    draggedId = card.getAttribute('href')?.replace('#work/', '');
+    if (!draggedId) { draggedEl = null; return; }
+    startY = e.clientY;
+    isDragging = false;
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  }
+
+  function onMove(e) {
+    if (!draggedEl) return;
+    if (!isDragging) {
+      if (Math.abs(e.clientY - startY) <= 5) return;
+      isDragging = true;
+      draggedEl.classList.add('dragging');
+    }
+
     document.querySelectorAll('.work-card').forEach(c => c.classList.remove('drag-over'));
-    card.classList.add('drag-over');
-  });
+    draggedEl.style.pointerEvents = 'none';
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    draggedEl.style.pointerEvents = '';
+    if (!el) return;
+    const target = el.closest('.work-card');
+    if (target && target !== draggedEl) target.classList.add('drag-over');
+  }
 
-  grid.addEventListener('drop', async (e) => {
-    e.preventDefault();
+  function onUp(e) {
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
     document.querySelectorAll('.work-card').forEach(c => c.classList.remove('dragging', 'drag-over'));
-    if (!draggedId) return;
-    const targetCard = e.target.closest('.work-card');
-    if (!targetCard) return;
-    const targetId = targetCard.getAttribute('href')?.replace('#work/', '');
-    if (!targetId || targetId === draggedId) return;
 
-    const projects = data.projects;
-    const fromIdx = projects.findIndex(p => p.id === draggedId);
-    const toIdx = projects.findIndex(p => p.id === targetId);
-    if (fromIdx === -1 || toIdx === -1) return;
-
-    const [moved] = projects.splice(fromIdx, 1);
-    const adjustedTo = toIdx > fromIdx ? toIdx - 1 : toIdx;
-    projects.splice(adjustedTo, 0, moved);
-
-    // Save new order to GitHub via adminCommit
-    let loadingEl = document.getElementById('dragLoading');
-    if (!loadingEl) {
-      loadingEl = document.createElement('div');
-      loadingEl.id = 'dragLoading';
-      loadingEl.textContent = '保存中...';
-      document.body.appendChild(loadingEl);
-    } else {
-      loadingEl.style.display = '';
+    if (!isDragging || !draggedId || !draggedEl) {
+      draggedEl = null; draggedId = null; isDragging = false;
+      return;
     }
 
-    try {
-      await adminCommit((currentData) => {
-        const orderMap = new Map(data.projects.map((p, i) => [p.id, i]));
-        currentData.projects.sort((a, b) => (orderMap.get(a.id) || 0) - (orderMap.get(b.id) || 0));
-      });
-    } finally {
-      if (loadingEl) loadingEl.style.display = 'none';
+    draggedEl.style.pointerEvents = 'none';
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    draggedEl.style.pointerEvents = '';
+    const targetCard = el?.closest('.work-card');
+    const targetId = targetCard?.getAttribute('href')?.replace('#work/', '');
+
+    if (targetId && targetId !== draggedId) {
+      const projects = data.projects;
+      const fromIdx = projects.findIndex(p => p.id === draggedId);
+      const toIdx = projects.findIndex(p => p.id === targetId);
+      if (fromIdx !== -1 && toIdx !== -1) {
+        const [moved] = projects.splice(fromIdx, 1);
+        const adjustedTo = toIdx > fromIdx ? toIdx - 1 : toIdx;
+        projects.splice(adjustedTo, 0, moved);
+
+        let loadingEl = document.getElementById('dragLoading');
+        if (!loadingEl) {
+          loadingEl = document.createElement('div');
+          loadingEl.id = 'dragLoading';
+          loadingEl.textContent = '保存中...';
+          document.body.appendChild(loadingEl);
+        } else {
+          loadingEl.style.display = '';
+        }
+
+        (async () => {
+          try {
+            await adminCommit((currentData) => {
+              const orderMap = new Map(data.projects.map((p, i) => [p.id, i]));
+              currentData.projects.sort((a, b) => (orderMap.get(a.id) || 0) - (orderMap.get(b.id) || 0));
+            });
+          } finally {
+            const el2 = document.getElementById('dragLoading');
+            if (el2) el2.style.display = 'none';
+          }
+        })();
+      }
     }
-  });
+
+    draggedEl = null; draggedId = null; isDragging = false;
+  }
+
+  grid.addEventListener('mousedown', onMouseDown);
 }
 
 async function updateCardThumbnails() {
@@ -440,10 +464,10 @@ function projectCard(p) {
   const saved = JSON.parse(localStorage.getItem(ADMIN_KEY) || '{}');
   const isAdmin = saved.token && saved.repo;
   return `
-    <a href="#work/${encodeURIComponent(p.id)}" class="work-card" ${isAdmin ? 'draggable="false"' : ''}>
+    <a href="#work/${encodeURIComponent(p.id)}" class="work-card">
       <div class="work-card-thumb">
         ${thumb || `<span class="emoji">${p.emoji || '🎬'}</span>`}
-        ${isAdmin ? `<span class="drag-handle" draggable="true" title="並び替え">⠿</span>` : ''}
+        ${isAdmin ? `<span class="drag-handle" title="並び替え">⠿</span>` : ''}
         ${isAdmin ? `<button class="card-del-btn" data-id="${escapeHtml(p.id)}" title="削除">🗑</button>` : ''}
       </div>
       <div class="work-card-body">
