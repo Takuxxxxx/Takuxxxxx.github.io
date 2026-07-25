@@ -64,5 +64,12 @@
       "videoUrl": "https://x.com/takuxsub/status/2081022605998592192",
       "links": []
     }
-  ]
+  ],
+  "theme": {
+    "bg": "#0000d6",
+    "accent": "#ff0000",
+    "accentEnd": "#0906db",
+    "text": "#1d1d1f",
+    "glassTint": "#ffffff"
+  }
 }
