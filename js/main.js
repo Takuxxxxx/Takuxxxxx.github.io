@@ -1,30 +1,33 @@
 let data = null;
+const CUSTOM_THEME_KEY = 'portfolio_custom_theme';
 
 (function initTheme() {
   const key = 'portfolio_theme';
   let saved;
   try { saved = localStorage.getItem(key); } catch {}
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const savedValid = saved && ['light','dark','vision','custom'].includes(saved);
-  let current = savedValid ? saved : (prefersDark ? 'dark' : 'light');
-  if (current === 'custom' && !data?.theme) current = 'light';
+  const hasCustom = (() => { try { return !!localStorage.getItem(CUSTOM_THEME_KEY); } catch {} })();
+  let current = saved && ['light','dark','custom'].includes(saved) ? saved : (prefersDark ? 'dark' : 'light');
+  if (current === 'custom' && !hasCustom) current = prefersDark ? 'dark' : 'light';
   applyTheme(current);
   const btn = document.getElementById('themeToggle');
   if (btn) {
-    const icons = { light: '☀️', dark: '🌙', vision: '✨', custom: '🎨' };
+    const icons = { light: '☀️', dark: '🌙', custom: '🎨' };
     btn.textContent = icons[current] || '☀️';
     btn.addEventListener('click', () => {
-      const themes = ['light', 'dark', 'vision', 'custom'];
+      const hasCustomNow = (() => { try { return !!localStorage.getItem(CUSTOM_THEME_KEY); } catch {} })();
+      const baseThemes = ['light', 'dark'];
+      const themes = hasCustomNow ? [...baseThemes, 'custom'] : baseThemes;
       let idx = themes.indexOf(current);
       if (idx === -1) idx = 0;
-      let next = themes[(idx + 1) % themes.length];
-      if (next === 'custom' && !data?.theme) next = 'light';
-      current = next;
+      current = themes[(idx + 1) % themes.length];
       applyTheme(current);
       localStorage.setItem(key, current);
-      btn.textContent = icons[current] || '☀️';
+      btn.textContent = (current === 'custom') ? '🎨' : (current === 'dark' ? '🌙' : '☀️');
     });
   }
+  const colorBtn = document.getElementById('colorEditBtn');
+  if (colorBtn) colorBtn.addEventListener('click', showCustomColorModal);
 })();
 
 function hexToRgb(hex) {
@@ -36,31 +39,25 @@ function applyTheme(name) {
   const root = document.documentElement;
   root.setAttribute('data-theme', name);
   root.removeAttribute('style');
-  if (name === 'custom' && data && data.theme) {
-    const t = data.theme;
-    const g = hexToRgb(t.glassTint || '#ffffff');
-    const bgRgb = hexToRgb(t.bg || '#f5f5f7');
-    root.style.setProperty('--bg', t.bg || '#f5f5f7');
-    root.style.setProperty('--accent', t.accent || '#e8a317');
-    root.style.setProperty('--accent-gradient', `linear-gradient(135deg,${t.accent || '#e8a317'},${t.accentEnd || '#d97706'})`);
-    root.style.setProperty('--text', t.text || '#1d1d1f');
+  if (name === 'custom') {
+    let colors;
+    try { colors = JSON.parse(localStorage.getItem(CUSTOM_THEME_KEY)); } catch {}
+    if (!colors) return;
+    const g = hexToRgb(colors.glassTint || '#ffffff');
+    const bgRgb = hexToRgb(colors.bg || '#f5f5f7');
+    root.style.setProperty('--bg', colors.bg || '#f5f5f7');
+    root.style.setProperty('--accent', colors.accent || '#e8a317');
+    root.style.setProperty('--accent-gradient', `linear-gradient(135deg,${colors.accent || '#e8a317'},${colors.accentEnd || '#d97706'})`);
+    root.style.setProperty('--text', colors.text || '#1d1d1f');
     root.style.setProperty('--text-secondary', `hsl(${Math.round(bgRgb.r*360/255)},15%,35%)`);
     root.style.setProperty('--text-tertiary', `hsl(${Math.round(bgRgb.r*360/255)},10%,50%)`);
     root.style.setProperty('--glass', `rgba(${g.r},${g.g},${g.b},0.65)`);
     root.style.setProperty('--glass-border', `rgba(${g.r},${g.g},${g.b},0.6)`);
     root.style.setProperty('--bg-elevated', `rgba(${g.r},${g.g},${g.b},0.72)`);
-    root.style.setProperty('--card-bg', `rgba(${g.r},${g.g},${g.b},0.55)`);
     root.style.setProperty('--input-bg', `rgba(${g.r},${g.g},${g.b},0.5)`);
     root.style.setProperty('--header-bg', `rgba(${g.r},${g.g},${g.b},0.7)`);
-    root.style.setProperty('--header-border', `rgba(0,0,0,0.04)`);
-    root.style.setProperty('--modal-overlay', `rgba(0,0,0,0.15)`);
-    root.style.setProperty('--card-shadow', `0 2px 12px rgba(0,0,0,0.05)`);
-    root.style.setProperty('--nav-hover', `rgba(0,0,0,0.04)`);
-    root.style.setProperty('--thumb-bg', `linear-gradient(135deg,${t.bg || '#f5f5f7'},${t.glassTint || '#ffffff'})`);
-    root.style.setProperty('--shadow-sm', `0 2px 8px rgba(0,0,0,0.06), inset 0 0 0 0.5px rgba(${g.r},${g.g},${g.b},0.7)`);
-    root.style.setProperty('--shadow-md', `0 4px 20px rgba(0,0,0,0.08), inset 0 0 0 0.5px rgba(${g.r},${g.g},${g.b},0.7)`);
-    root.style.setProperty('--shadow-lg', `0 8px 40px rgba(0,0,0,0.1), inset 0 0 0 0.5px rgba(${g.r},${g.g},${g.b},0.7)`);
-    root.style.setProperty('--accent-text', t.accent || '#8B6914');
+    root.style.setProperty('--thumb-bg', `linear-gradient(135deg,${colors.bg || '#f5f5f7'},${colors.glassTint || '#ffffff'})`);
+    root.style.setProperty('--accent-text', colors.accent || '#8B6914');
   }
 }
 
@@ -119,9 +116,6 @@ function wrapFadeIn(html) {
     data = {"profile":{"name":"Your Name","tagline":"Video Editor / Creator","bio":"X（Twitter）で動画編集作品を発信中。\nカット編集・色調整・エフェクト・テロップ入れなど、動画全般の編集を手がけています。","email":"yourname@example.com"},"social":{"twitter":"https://x.com/takuch_fortnite","youtube":"https://www.youtube.com/@takuch-777","tiktok":"https://www.tiktok.com/@t4ku_vfx","github":""},"projects":[{"id":"video-project-7","title":"xのテストだよ","category":"video","emoji":"🎬","description":"gegeg","details":"gegeg","tags":[],"date":"2026-07","links":[{"label":"https://x.com/takuch_fortnite/status/2080095556286697875","url":"https://x.com/takuch_fortnite/status/2080095556286697875https://x.com/takuch_fortnite/status/2080095556286697875"}],"videoUrl":"https://x.com/takuch_fortnite/status/2080095556286697875"},{"id":"video-project-8","title":"てすとai","category":"video","emoji":"🎬","description":"てすと","details":"てすと","tags":[],"date":"2026-07","links":[{"label":"YouTubeで見る","url":"https://www.youtube.com/watch?v=AfQzohIx6UA"}],"videoUrl":"https://www.youtube.com/watch?v=AfQzohIx6UA"},{"id":"video-project-9","title":"てーすと","category":"video","emoji":"🎬","description":"てーすと","details":"","tags":[],"date":"2026-07","videoUrl":"https://www.youtube.com/watch?v=mQEU6vvtGQ4","links":[]},{"id":"video-project-11","title":"tesutttt","category":"video","emoji":"🎬","description":"tesutttt","details":"","tags":[],"date":"2026-07","links":[{"label":"https://x.com/takuch_fortnite/status/2079758458505822320","url":"https://x.com/takuch_fortnite/status/2079758458505822320"}]}]};
   }
 
-  // Apply custom theme if saved as custom
-  if (document.documentElement.getAttribute('data-theme') === 'custom') applyTheme('custom');
-
   const nav = document.getElementById('nav');
   const menuBtn = document.getElementById('menuBtn');
   const loading = document.getElementById('loading');
@@ -167,7 +161,6 @@ function renderWorks(app) {
       </div>
       <div class="search-none" id="searchNone">該当する作品が見つかりませんでした</div>
       ${isAdmin ? '<button class="fab" onclick="showAddModal()" title="作品を追加">+</button>' : ''}
-      ${isAdmin ? '<button class="fab" onclick="showThemeEditModal()" title="テーマ編集" style="bottom:96px;background:var(--glass);color:var(--text);box-shadow:0 2px 12px rgba(0,0,0,0.1);font-size:1.2rem">🎨</button>' : ''}
     </div>
   `);
   setupFilter();
@@ -887,10 +880,9 @@ function showAddModal() {
   setTimeout(() => document.getElementById('aTitle')?.focus(), 100);
 }
 
-function showThemeEditModal() {
-  const saved = JSON.parse(localStorage.getItem(ADMIN_KEY) || '{}');
-  if (!saved.token || !saved.repo) { showLoginModal(); return; }
-  const t = data.theme || { bg: '#f5f5f7', accent: '#e8a317', accentEnd: '#d97706', text: '#1d1d1f', glassTint: '#ffffff' };
+function showCustomColorModal() {
+  const saved = (() => { try { return JSON.parse(localStorage.getItem(CUSTOM_THEME_KEY)); } catch {} })();
+  const t = saved || { bg: '#f5f5f7', accent: '#e8a317', accentEnd: '#d97706', text: '#1d1d1f', glassTint: '#ffffff' };
 
   const preview = () => {
     const vals = {
@@ -909,20 +901,31 @@ function showThemeEditModal() {
     root.style.setProperty('--glass', `rgba(${g.r},${g.g},${g.b},0.65)`);
     root.style.setProperty('--glass-border', `rgba(${g.r},${g.g},${g.b},0.6)`);
     root.style.setProperty('--bg-elevated', `rgba(${g.r},${g.g},${g.b},0.72)`);
-    root.style.setProperty('--card-bg', `rgba(${g.r},${g.g},${g.b},0.55)`);
     root.style.setProperty('--input-bg', `rgba(${g.r},${g.g},${g.b},0.5)`);
     root.style.setProperty('--header-bg', `rgba(${g.r},${g.g},${g.b},0.7)`);
     root.style.setProperty('--thumb-bg', `linear-gradient(135deg,${vals.bg},${vals.glassTint})`);
     root.style.setProperty('--accent-text', vals.accent);
-    // Luminance-based contrast warning
     const lum = (c) => { const e = hexToRgb(c); return 0.299*e.r + 0.587*e.g + 0.114*e.b; };
     const contrast = Math.abs(lum(vals.text) - lum(vals.bg));
     const warn = document.getElementById('themeContrastWarn');
     if (warn) warn.style.display = contrast < 80 ? '' : 'none';
   };
 
+  const resetModal = () => {
+    localStorage.removeItem(CUSTOM_THEME_KEY);
+    const key = 'portfolio_theme';
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const fallback = prefersDark ? 'dark' : 'light';
+    applyTheme(fallback);
+    localStorage.setItem(key, fallback);
+    const btn = document.getElementById('themeToggle');
+    if (btn) btn.textContent = fallback === 'dark' ? '🌙' : '☀️';
+    closeModal();
+  };
+
   showModal(`
-    <h2>🎨 テーマ編集</h2>
+    <h2>🎨 カラーカスタマイズ</h2>
+    <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:16px">このブラウザだけに保存されます（管理者ログイン不要）</p>
     <div class="admin-form">
       <div class="admin-field">
         <label>背景色</label>
@@ -945,20 +948,21 @@ function showThemeEditModal() {
         <input type="color" id="ctGlass" value="${t.glassTint}" class="admin-input" style="height:40px;padding:4px;cursor:pointer">
       </div>
       <p id="themeContrastWarn" style="display:none;color:#e53e3e;font-size:0.85rem;text-align:center;margin-bottom:8px">⚠️ 背景色と文字色のコントラストが低い可能性があります</p>
-      <button onclick="adminSaveTheme()" id="submitBtn" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px">保存</button>
+      <button onclick="saveCustomColor()" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px">保存</button>
+      <button onclick="resetCustomColor()" class="btn btn-outline" style="width:100%;justify-content:center;margin-top:8px">リセット（標準テーマに戻す）</button>
       <p id="themeStatus" style="text-align:center;margin-top:12px;font-size:0.9rem;color:var(--text-secondary)"></p>
     </div>
   `);
 
-  // Attach live preview
   setTimeout(() => {
     document.querySelectorAll('#ctBg,#ctAccent,#ctAccentEnd,#ctText,#ctGlass').forEach(el => {
       el.addEventListener('input', preview);
     });
   }, 50);
+  window.resetCustomColor = resetModal;
 }
 
-async function adminSaveTheme() {
+function saveCustomColor() {
   const t = {
     bg: document.getElementById('ctBg').value,
     accent: document.getElementById('ctAccent').value,
@@ -966,16 +970,14 @@ async function adminSaveTheme() {
     text: document.getElementById('ctText').value,
     glassTint: document.getElementById('ctGlass').value,
   };
-  await adminCommit((currentData) => {
-    currentData.theme = t;
-  });
-  // After save, switch to custom theme
+  localStorage.setItem(CUSTOM_THEME_KEY, JSON.stringify(t));
   const key = 'portfolio_theme';
   document.documentElement.setAttribute('data-theme', 'custom');
   localStorage.setItem(key, 'custom');
   const btn = document.getElementById('themeToggle');
   if (btn) btn.textContent = '🎨';
   applyTheme('custom');
+  closeModal();
 }
 
 function showEditModal(id) {
