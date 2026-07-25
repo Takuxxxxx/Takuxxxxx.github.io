@@ -37,7 +37,7 @@
       "date": "2026-07",
       "videoUrl": "https://www.youtube.com/watch?v=AfQzohIx6UA",
       "links": [],
-      "featured": true
+      "featured": false
     },
     {
       "id": "video-project-2",
@@ -50,7 +50,7 @@
       "date": "2026-07",
       "videoUrl": "https://www.youtube.com/watch?v=AfQzohIx6UA",
       "links": [],
-      "featured": true
+      "featured": false
     }
   ]
 }
