@@ -66,8 +66,8 @@
     }
   ],
   "theme": {
-    "bg": "#00d619",
-    "accent": "#ff0000",
+    "bg": "#d60015",
+    "accent": "#2bff00",
     "accentEnd": "#0906db",
     "text": "#1d1d1f",
     "glassTint": "#ffffff"
