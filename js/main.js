@@ -501,6 +501,32 @@ function videoEmbed(url) {
   return '';
 }
 
+function fallbackVideoToXLink(wrapperId, linkUrl) {
+  const wrap = document.getElementById(wrapperId);
+  if (!wrap) return;
+  wrap.outerHTML = `<a href="${escapeHtml(linkUrl)}" target="_blank" rel="noopener" class="btn btn-primary" style="display:flex;justify-content:center;padding:20px 24px;font-size:1.1rem;border-radius:var(--radius-md);text-decoration:none">X（Twitter）で見る</a>`;
+}
+
+function initHlsVideo(videoEl, url, onError) {
+  if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
+    videoEl.src = url;
+    return;
+  }
+  const script = document.createElement('script');
+  script.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest';
+  script.onload = () => {
+    if (typeof Hls === 'undefined') { onError(); return; }
+    const hls = new Hls();
+    hls.loadSource(url);
+    hls.attachMedia(videoEl);
+    hls.on(Hls.Events.ERROR, (evt, data) => {
+      if (data.fatal) onError();
+    });
+  };
+  script.onerror = onError;
+  document.head.appendChild(script);
+}
+
 async function renderWorkDetail(app, id) {
   const p = data.projects.find(proj => proj.id === id);
   if (!p) return renderNotFound(app);
@@ -581,18 +607,43 @@ async function renderWorkDetail(app, id) {
         const tweet = await r.json();
         if (tweet.media_extended && tweet.media_extended.length) {
           const media = tweet.media_extended[0];
+          console.log('[vxtwitter] media_extended[0]:', media);
           let html;
           if (media.type === 'video' || media.type === 'gif') {
-            html = `<div class="video-wrapper"><video src="${escapeHtml(media.url)}" controls playsinline style="width:100%;border-radius:var(--radius-md)" poster="${escapeHtml(media.thumbnail_url || '')}"></video></div>`;
+            const videoUrl = media.url;
+            const posterUrl = media.thumbnail_url || '';
+            const isHls = /\.m3u8/i.test(videoUrl);
+            const wrapperId = 'xVideoWrap';
+            html = `<div class="video-wrapper" id="${wrapperId}">${isHls
+              ? `<video id="xVideo" controls playsinline style="width:100%;border-radius:var(--radius-md)" poster="${escapeHtml(posterUrl)}"></video>`
+              : `<video id="xVideo" src="${escapeHtml(videoUrl)}" controls playsinline style="width:100%;border-radius:var(--radius-md)" poster="${escapeHtml(posterUrl)}"></video>`}
+            </div>`;
+            if (html && el) {
+              el.outerHTML = html;
+              const videoEl = document.getElementById('xVideo');
+              if (videoEl) {
+                const fallback = () => fallbackVideoToXLink(wrapperId, linkUrl);
+                if (isHls) {
+                  initHlsVideo(videoEl, videoUrl, fallback);
+                }
+                videoEl.addEventListener('error', fallback);
+                videoEl.addEventListener('loadedmetadata', () => {
+                  if (!videoEl.duration || isNaN(videoEl.duration) || videoEl.duration === 0) fallback();
+                });
+                setTimeout(() => {
+                  if (videoEl.readyState < 2 && !videoEl.paused) fallback();
+                }, 10000);
+              }
+            }
           } else if (media.thumbnail_url) {
             html = `<div class="work-detail-thumb" style="overflow:hidden"><img src="${escapeHtml(media.thumbnail_url)}" alt="${escapeHtml(p.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover"></div>`;
+            if (html && el) el.outerHTML = html;
           }
-          if (html && el) el.outerHTML = html;
         }
       }
     } catch {}
-    if (el && !el.querySelector('video, img')) {
-      el.outerHTML = `<a href="${escapeHtml(linkUrl)}" target="_blank" rel="noopener" class="btn btn-primary" style="display:flex;justify-content:center;padding:20px 24px;font-size:1.1rem;border-radius:var(--radius-md);text-decoration:none">X（Twitter）で見る</a>`;
+    if (document.getElementById('xPreview') && !document.querySelector('#xPreview video, #xPreview img')) {
+      document.getElementById('xPreview').outerHTML = `<a href="${escapeHtml(linkUrl)}" target="_blank" rel="noopener" class="btn btn-primary" style="display:flex;justify-content:center;padding:20px 24px;font-size:1.1rem;border-radius:var(--radius-md);text-decoration:none">X（Twitter）で見る</a>`;
     }
   }
 }
