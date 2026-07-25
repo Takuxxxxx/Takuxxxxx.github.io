@@ -12,13 +12,17 @@ const CUSTOM_THEME_KEY = 'portfolio_custom_theme';
   applyTheme(current);
   const btn = document.getElementById('themeToggle');
   if (btn) {
-    btn.textContent = current === 'dark' ? '🌙' : '☀️';
+    const icons = { light: '☀️', dark: '🌙', custom: '⭐' };
+    btn.textContent = icons[current] || '☀️';
     btn.addEventListener('click', () => {
-      // simple two-state: light ↔ dark, custom exits to light
-      current = current === 'dark' ? 'light' : 'dark';
+      const hasCustomNow = (() => { try { return !!localStorage.getItem(CUSTOM_THEME_KEY); } catch {} })();
+      const themes = hasCustomNow ? ['light', 'dark', 'custom'] : ['light', 'dark'];
+      let idx = themes.indexOf(current);
+      if (idx === -1) idx = 0;
+      current = themes[(idx + 1) % themes.length];
       applyTheme(current);
       localStorage.setItem(key, current);
-      btn.textContent = current === 'dark' ? '🌙' : '☀️';
+      btn.textContent = icons[current] || '☀️';
     });
   }
   const colorBtn = document.getElementById('colorEditBtn');
@@ -970,7 +974,7 @@ function saveCustomColor() {
   document.documentElement.setAttribute('data-theme', 'custom');
   localStorage.setItem(key, 'custom');
   const btn = document.getElementById('themeToggle');
-  if (btn) btn.textContent = '☀️';
+  if (btn) btn.textContent = '⭐';
   applyTheme('custom');
   closeModal();
 }
