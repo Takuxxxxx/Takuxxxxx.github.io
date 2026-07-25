@@ -12,15 +12,10 @@ const CUSTOM_THEME_KEY = 'portfolio_custom_theme';
   applyTheme(current);
   const btn = document.getElementById('themeToggle');
   if (btn) {
-    const icons = { light: '☀️', dark: '🌙' };
-    btn.textContent = icons[current] || (current === 'custom' ? '☀️' : '☀️');
+    btn.textContent = current === 'dark' ? '🌙' : '☀️';
     btn.addEventListener('click', () => {
-      const hasCustomNow = (() => { try { return !!localStorage.getItem(CUSTOM_THEME_KEY); } catch {} })();
-      const baseThemes = ['light', 'dark'];
-      const themes = hasCustomNow ? [...baseThemes, 'custom'] : baseThemes;
-      let idx = themes.indexOf(current);
-      if (idx === -1) idx = 0;
-      current = themes[(idx + 1) % themes.length];
+      // simple two-state: light ↔ dark, custom exits to light
+      current = current === 'dark' ? 'light' : 'dark';
       applyTheme(current);
       localStorage.setItem(key, current);
       btn.textContent = current === 'dark' ? '🌙' : '☀️';
