@@ -4,18 +4,20 @@ let data = null;
   const key = 'portfolio_theme';
   let saved;
   try { saved = localStorage.getItem(key); } catch {}
+  const themes = ['light', 'dark', 'vision'];
+  const icons = { light: '☀️', dark: '🌙', vision: '✨' };
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const dark = saved ? saved === 'dark' : prefersDark;
-  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  let current = saved && themes.includes(saved) ? saved : (prefersDark ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', current);
   const btn = document.getElementById('themeToggle');
   if (btn) {
-    btn.textContent = dark ? '☀️' : '🌙';
+    btn.textContent = icons[current];
     btn.addEventListener('click', () => {
-      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      const next = isDark ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem(key, next);
-      btn.textContent = next === 'dark' ? '☀️' : '🌙';
+      const idx = themes.indexOf(current);
+      current = themes[(idx + 1) % themes.length];
+      document.documentElement.setAttribute('data-theme', current);
+      localStorage.setItem(key, current);
+      btn.textContent = icons[current];
     });
   }
 })();

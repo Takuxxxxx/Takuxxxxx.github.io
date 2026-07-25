@@ -51,6 +51,44 @@
   color-scheme: dark;
 }
 
+[data-theme="vision"] {
+  --accent: #d4a050;
+  --accent-gradient: linear-gradient(135deg, #e8b85a, #c49040);
+  --bg: #12121e;
+  --bg-elevated: rgba(255,255,255,0.12);
+  --glass: rgba(255,255,255,0.10);
+  --glass-border: rgba(255,255,255,0.14);
+  --text: #f0f0f5;
+  --text-secondary: #b0b0c0;
+  --text-tertiary: #808090;
+  --radius-sm: 14px;
+  --radius-md: 24px;
+  --radius-lg: 32px;
+  --radius-full: 9999px;
+  --shadow-sm: 0 2px 12px rgba(0,0,0,0.35), inset 0 0 0 0.5px rgba(255,255,255,0.06);
+  --shadow-md: 0 4px 28px rgba(0,0,0,0.4), inset 0 0 0 0.5px rgba(255,255,255,0.08);
+  --shadow-lg: 0 8px 52px rgba(0,0,0,0.45), inset 0 0 0 0.5px rgba(255,255,255,0.1);
+  --header-bg: rgba(18,18,30,0.65);
+  --header-border: rgba(255,255,255,0.06);
+  --card-bg: rgba(255,255,255,0.06);
+  --card-shadow: 0 2px 16px rgba(0,0,0,0.25);
+  --modal-overlay: rgba(0,0,0,0.6);
+  --input-bg: rgba(255,255,255,0.07);
+  --nav-hover: rgba(255,255,255,0.08);
+  --thumb-bg: linear-gradient(135deg, #1e1e3a, #2a2a4e);
+  --accent-text: #e8c070;
+  color-scheme: dark;
+}
+
+[data-theme="vision"] body {
+  background:
+    radial-gradient(ellipse 600px 400px at 15% 30%, rgba(130, 80, 220, 0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 500px 400px at 80% 15%, rgba(220, 160, 60, 0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 400px 500px at 50% 85%, rgba(60, 160, 220, 0.10) 0%, transparent 70%),
+    linear-gradient(145deg, #0f0c24 0%, #1a1a38 40%, #12122a 100%);
+  background-attachment: fixed;
+}
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
@@ -261,6 +299,10 @@ a { color: inherit; text-decoration: none; }
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 .search-bar:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(212,175,55,0.15); }
+[data-theme="vision"] .search-bar {
+  backdrop-filter: blur(16px);
+  box-shadow: 0 0 0 0.5px rgba(255,255,255,0.08) inset;
+}
 .search-clear {
   position: absolute; right: 12px; background: none; border: none;
   cursor: pointer; font-size: 1rem; color: var(--text-tertiary);
@@ -318,6 +360,23 @@ html[data-theme="dark"] .work-card-thumb {
 }
 html[data-theme="dark"] .work-card.selected {
   background: rgba(44,44,46,0.92);
+}
+[data-theme="vision"] .work-card {
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(28px) saturate(150%);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.3), inset 0 0 0 0.5px rgba(255,255,255,0.06);
+}
+[data-theme="vision"] .work-card:hover {
+  background: rgba(255,255,255,0.12);
+  box-shadow: 0 8px 48px rgba(0,0,0,0.4), inset 0 0 0 0.5px rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.18);
+}
+[data-theme="vision"] .work-card.selected {
+  background: rgba(255,255,255,0.12);
+}
+[data-theme="vision"] .work-card-thumb::after {
+  content: none;
 }
 .work-card.selected { outline: 3px solid var(--accent); outline-offset: -3px; background: rgba(212,175,55,0.08); }
 .sel-rect { position: fixed; z-index: 10; background: rgba(212,175,55,0.15); border: 1px solid var(--accent); pointer-events: none; }
@@ -396,6 +455,11 @@ html[data-theme="dark"] .work-card.selected {
 }
 .work-detail-back:hover { color: var(--accent); background: var(--nav-hover); }
 [data-theme="dark"] .work-detail-back { border: none; box-shadow: 0 2px 12px rgba(0,0,0,0.3); }
+[data-theme="vision"] .work-detail-back {
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.12);
+}
 
 .work-detail-nav {
   display: flex; justify-content: space-between; gap: 16px;
@@ -413,6 +477,12 @@ html[data-theme="dark"] .work-card.selected {
 .work-detail-nav-link span { font-weight: 400; font-size: 0.8rem; color: var(--text-secondary); }
 .work-detail-nav-link.next { text-align: right; }
 [data-theme="dark"] .work-detail-nav-link { border: none; box-shadow: 0 2px 12px rgba(0,0,0,0.3); }
+[data-theme="vision"] .work-detail-nav-link {
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+}
 
 .work-detail-header { margin-bottom: 32px; }
 .work-detail-cat {
@@ -434,6 +504,10 @@ html[data-theme="dark"] .work-card.selected {
   border: 1px solid var(--glass-border);
 }
 [data-theme="dark"] .work-detail-thumb { border: none; }
+[data-theme="vision"] .work-detail-thumb {
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+}
 
 .work-detail-glass {
   background: var(--glass);
@@ -450,6 +524,12 @@ html[data-theme="dark"] .work-card.selected {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   box-shadow: 0 2px 12px rgba(0,0,0,0.25), 0 6px 28px rgba(0,0,0,0.15);
+}
+[data-theme="vision"] .work-detail-glass {
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(28px) saturate(150%);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.3), inset 0 0 0 0.5px rgba(255,255,255,0.06);
 }
 
 .work-detail-section { margin-bottom: 28px; }
@@ -520,6 +600,10 @@ html[data-theme="dark"] .work-card.selected {
   padding: 28px;
   box-shadow: var(--shadow-sm);
 }
+[data-theme="vision"] .admin-form {
+  backdrop-filter: blur(32px) saturate(150%);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.3), inset 0 0 0 0.5px rgba(255,255,255,0.06);
+}
 .admin-field { margin-bottom: 16px; }
 .admin-field label {
   display: block; font-size: 0.85rem; font-weight: 600;
@@ -533,6 +617,11 @@ html[data-theme="dark"] .work-card.selected {
   transition: border-color .2s; outline: none;
 }
 .admin-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(232,163,23,0.12); }
+[data-theme="vision"] .admin-input {
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 0 0.5px rgba(255,255,255,0.08) inset;
+}
 .admin-textarea { min-height: 100px; resize: vertical; line-height: 1.6; }
 .admin-row { display: flex; gap: 12px; }
 .upload-row { display: flex; gap: 8px; align-items: stretch; }
@@ -569,6 +658,12 @@ html[data-theme="dark"] .work-card.selected {
   box-shadow: 0 20px 60px rgba(0,0,0,0.15);
   position: relative;
   animation: modalSlideIn 0.3s var(--ease-spring);
+}
+[data-theme="vision"] .modal {
+  background: rgba(255,255,255,0.10);
+  backdrop-filter: blur(32px) saturate(150%);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 0 0 0.5px rgba(255,255,255,0.06);
 }
 @keyframes modalSlideIn {
   from { transform: translateY(20px) scale(0.96); opacity: 0; }
