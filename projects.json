@@ -11,5 +11,18 @@
     "tiktok": "https://www.tiktok.com/@t4ku_vfx",
     "github": ""
   },
-  "projects": []
+  "projects": [
+    {
+      "id": "video-project-1",
+      "title": "aiehasg",
+      "category": "video",
+      "emoji": "🎬",
+      "description": "aiehasg",
+      "details": "",
+      "tags": [],
+      "date": "2026-07",
+      "videoUrl": "https://www.youtube.com/watch?v=AfQzohIx6UA",
+      "links": []
+    }
+  ]
 }
