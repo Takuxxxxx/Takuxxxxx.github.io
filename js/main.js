@@ -98,7 +98,11 @@ function wrapFadeIn(html) {
 })();
 
 function renderWorks(app) {
-  const projects = data.projects;
+  const projects = [...data.projects].sort((a, b) => {
+    if (a.featured && !b.featured) return -1;
+    if (!a.featured && b.featured) return 1;
+    return 0;
+  });
   const saved = JSON.parse(localStorage.getItem(ADMIN_KEY) || '{}');
   const isAdmin = saved.token && saved.repo;
   app.innerHTML = wrapFadeIn(`
@@ -120,7 +124,7 @@ function renderWorks(app) {
   `);
   setupFilter();
   updateCardThumbnails();
-  if (JSON.parse(localStorage.getItem(ADMIN_KEY) || '{}').token) enableBatchSelect();
+  if (JSON.parse(localStorage.getItem(ADMIN_KEY) || '{}').token) { enableBatchSelect(); enableDragReorder(); }
 }
 
 function setupFilter() {
@@ -174,7 +178,7 @@ function enableBatchSelect() {
   selBox.className = 'sel-rect';
   const bar = document.createElement('div');
   bar.className = 'sel-bar';
-  bar.innerHTML = '<span class="sel-bar-count"></span><input class="sel-bar-tags" placeholder="タグ(カンマ区切り)"><button class="sel-bar-tag-btn btn btn-outline" style="margin:0">タグ追加</button><button class="sel-bar-del btn btn-primary" style="margin:0">まとめて削除</button>';
+  bar.innerHTML = '<span class="sel-bar-count"></span><input class="sel-bar-tags" placeholder="タグ(カンマ区切り)"><button class="sel-bar-tag-btn btn btn-outline" style="margin:0">タグ追加</button><button class="sel-bar-feat-btn btn btn-outline" style="margin:0">⭐ おすすめ</button><button class="sel-bar-del btn btn-primary" style="margin:0">まとめて削除</button>';
   bar.querySelector('.sel-bar-del').onclick = () => {
     const ids = Array.from(document.querySelectorAll('.work-card.selected')).map(c => c.getAttribute('href')?.replace('#work/', '')).filter(Boolean);
     if (!ids.length || !confirm(`選択した${ids.length}件をすべて削除しますか？`)) return;
@@ -201,6 +205,18 @@ function enableBatchSelect() {
     });
     clearSelection();
   };
+  bar.querySelector('.sel-bar-feat-btn').onclick = () => {
+    const ids = Array.from(document.querySelectorAll('.work-card.selected')).map(c => c.getAttribute('href')?.replace('#work/', '')).filter(Boolean);
+    if (!ids.length) return;
+    adminCommit((currentData) => {
+      ids.forEach(id => {
+        const p = currentData.projects.find(proj => proj.id === id);
+        if (!p) return;
+        p.featured = !p.featured;
+      });
+    });
+    clearSelection();
+  };
 
   function updateBar() {
     const n = document.querySelectorAll('.work-card.selected').length;
@@ -219,7 +235,7 @@ function enableBatchSelect() {
   document.addEventListener('mousedown', (e) => {
     if (e.button !== 0 || document.querySelector('.modal-overlay')) return;
     if (!document.querySelector('.works-grid')) return;
-    if (e.target.closest('.search-bar-wrap, .search-clear, .sel-bar')) return;
+    if (e.target.closest('.search-bar-wrap, .search-clear, .sel-bar, .drag-handle, .upload-btn, .upload-row')) return;
     if (isOnCard(e.target) && !e.target.closest('.card-del-btn')) {
       if (document.querySelector('.work-card.selected')) clearSelection();
       return;
@@ -297,6 +313,79 @@ function enableBatchSelect() {
   });
 }
 
+function enableDragReorder() {
+  const grid = document.querySelector('.works-grid');
+  if (!grid || grid.dataset.dragInit) return;
+  grid.dataset.dragInit = '1';
+
+  let draggedId = null;
+
+  grid.addEventListener('dragstart', (e) => {
+    const handle = e.target.closest('.drag-handle');
+    if (!handle) { e.preventDefault(); return; }
+    const card = handle.closest('.work-card');
+    if (!card) { e.preventDefault(); return; }
+    draggedId = card.getAttribute('href')?.replace('#work/', '');
+    if (!draggedId) { e.preventDefault(); return; }
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', draggedId);
+    card.classList.add('dragging');
+  });
+
+  grid.addEventListener('dragend', () => {
+    document.querySelectorAll('.work-card').forEach(c => c.classList.remove('dragging', 'drag-over'));
+    draggedId = null;
+  });
+
+  grid.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    const card = e.target.closest('.work-card');
+    if (!card) return;
+    document.querySelectorAll('.work-card').forEach(c => c.classList.remove('drag-over'));
+    card.classList.add('drag-over');
+  });
+
+  grid.addEventListener('drop', async (e) => {
+    e.preventDefault();
+    document.querySelectorAll('.work-card').forEach(c => c.classList.remove('dragging', 'drag-over'));
+    if (!draggedId) return;
+    const targetCard = e.target.closest('.work-card');
+    if (!targetCard) return;
+    const targetId = targetCard.getAttribute('href')?.replace('#work/', '');
+    if (!targetId || targetId === draggedId) return;
+
+    const projects = data.projects;
+    const fromIdx = projects.findIndex(p => p.id === draggedId);
+    const toIdx = projects.findIndex(p => p.id === targetId);
+    if (fromIdx === -1 || toIdx === -1) return;
+
+    const [moved] = projects.splice(fromIdx, 1);
+    const adjustedTo = toIdx > fromIdx ? toIdx - 1 : toIdx;
+    projects.splice(adjustedTo, 0, moved);
+
+    // Save new order to GitHub via adminCommit
+    let loadingEl = document.getElementById('dragLoading');
+    if (!loadingEl) {
+      loadingEl = document.createElement('div');
+      loadingEl.id = 'dragLoading';
+      loadingEl.textContent = '保存中...';
+      document.body.appendChild(loadingEl);
+    } else {
+      loadingEl.style.display = '';
+    }
+
+    try {
+      await adminCommit((currentData) => {
+        const orderMap = new Map(data.projects.map((p, i) => [p.id, i]));
+        currentData.projects.sort((a, b) => (orderMap.get(a.id) || 0) - (orderMap.get(b.id) || 0));
+      });
+    } finally {
+      if (loadingEl) loadingEl.style.display = 'none';
+    }
+  });
+}
+
 async function updateCardThumbnails() {
   for (const p of data.projects) {
     if (p.thumbnail || autoThumb(p)) continue;
@@ -351,12 +440,14 @@ function projectCard(p) {
   const saved = JSON.parse(localStorage.getItem(ADMIN_KEY) || '{}');
   const isAdmin = saved.token && saved.repo;
   return `
-    <a href="#work/${encodeURIComponent(p.id)}" class="work-card">
+    <a href="#work/${encodeURIComponent(p.id)}" class="work-card" ${isAdmin ? 'draggable="false"' : ''}>
       <div class="work-card-thumb">
         ${thumb || `<span class="emoji">${p.emoji || '🎬'}</span>`}
+        ${isAdmin ? `<span class="drag-handle" draggable="true" title="並び替え">⠿</span>` : ''}
         ${isAdmin ? `<button class="card-del-btn" data-id="${escapeHtml(p.id)}" title="削除">🗑</button>` : ''}
       </div>
       <div class="work-card-body">
+        ${p.featured ? '<span class="featured-badge">⭐ おすすめ</span>' : ''}
         <div class="work-card-cat">${escapeHtml(p.category)}</div>
         <div class="work-card-title">${escapeHtml(p.title)}</div>
         <div class="work-card-desc">${escapeHtml(p.description)}</div>
@@ -407,6 +498,15 @@ async function renderWorkDetail(app, id) {
     previewHtml = `<div class="work-detail-thumb"><span>${p.emoji || '🎬'}</span></div>`;
   }
 
+  const idx = data.projects.findIndex(proj => proj.id === id);
+  const prev = idx > 0 ? data.projects[idx - 1] : null;
+  const next = idx < data.projects.length - 1 ? data.projects[idx + 1] : null;
+  const prevNextHtml = (prev || next) ? `
+    <div class="work-detail-nav">
+      ${prev ? `<a href="#work/${encodeURIComponent(prev.id)}" class="work-detail-nav-link prev">← 前の作品<br><span>${escapeHtml(prev.title)}</span></a>` : '<div></div>'}
+      ${next ? `<a href="#work/${encodeURIComponent(next.id)}" class="work-detail-nav-link next">次の作品 →<br><span>${escapeHtml(next.title)}</span></a>` : ''}
+    </div>` : '';
+
   app.innerHTML = wrapFadeIn(`
     <div class="work-detail">
       <a href="#works" class="work-detail-back">← Back to Works</a>
@@ -442,6 +542,7 @@ async function renderWorkDetail(app, id) {
             }).join('')}
           </div>
         </div>` : ''}
+        ${prevNextHtml}
       </div>
     </div>
   `);
@@ -626,8 +727,20 @@ function showAddModal() {
         <input type="text" id="aTitle" class="admin-input" placeholder="作品タイトル">
       </div>
       <div class="admin-field">
+        <label>サムネイル画像</label>
+        <div class="upload-row">
+          <input type="text" id="aThumb" class="admin-input" placeholder="https://...">
+          <input type="file" accept="image/*" class="upload-btn" onchange="handleFileUpload(this, 'aThumb', 'uploadStatusThumb')">
+        </div>
+        <p id="uploadStatusThumb" style="font-size:0.8rem;color:var(--text-tertiary);margin-top:2px"></p>
+      </div>
+      <div class="admin-field">
         <label>動画URL（YouTube / mp4）</label>
-        <input type="text" id="aVideoUrl" class="admin-input" placeholder="https://youtube.com/watch?v=...">
+        <div class="upload-row">
+          <input type="text" id="aVideoUrl" class="admin-input" placeholder="https://youtube.com/watch?v=...">
+          <input type="file" accept="video/*,image/*" class="upload-btn" onchange="handleFileUpload(this, 'aVideoUrl', 'uploadStatusVideo')">
+        </div>
+        <p id="uploadStatusVideo" style="font-size:0.8rem;color:var(--text-tertiary);margin-top:2px"></p>
       </div>
       <div class="admin-field">
         <label>リンクURL</label>
@@ -675,8 +788,12 @@ function showEditModal(id) {
           <input type="text" id="aEmoji" class="admin-input" value="${escapeHtml(p.emoji || '🎬')}" style="text-align:center;font-size:1.5rem">
         </div>
         <div class="admin-field" style="flex:2">
-          <label>サムネイル画像URL</label>
-          <input type="text" id="aThumb" class="admin-input" value="${escapeHtml(p.thumbnail || '')}" placeholder="https://...">
+          <label>サムネイル画像</label>
+          <div class="upload-row">
+            <input type="text" id="aThumb" class="admin-input" value="${escapeHtml(p.thumbnail || '')}" placeholder="https://...">
+            <input type="file" accept="image/*" class="upload-btn" onchange="handleFileUpload(this, 'aThumb', 'editUploadStatusThumb')">
+          </div>
+          <p id="editUploadStatusThumb" style="font-size:0.8rem;color:var(--text-tertiary);margin-top:2px"></p>
         </div>
         <div class="admin-field" style="flex:2">
           <label>日付</label>
@@ -692,8 +809,12 @@ function showEditModal(id) {
         <textarea id="aDetail" class="admin-input admin-textarea">${escapeHtml(p.details || p.description)}</textarea>
       </div>
       <div class="admin-field">
-        <label>動画URL（YouTube / mp4 など）</label>
-        <input type="text" id="aVideoUrl" class="admin-input" value="${escapeHtml(p.videoUrl || '')}" placeholder="https://youtube.com/watch?v=...">
+        <label>動画URL</label>
+        <div class="upload-row">
+          <input type="text" id="aVideoUrl" class="admin-input" value="${escapeHtml(p.videoUrl || '')}" placeholder="https://youtube.com/watch?v=...">
+          <input type="file" accept="video/*,image/*" class="upload-btn" onchange="handleFileUpload(this, 'aVideoUrl', 'editUploadStatusVideo')">
+        </div>
+        <p id="editUploadStatusVideo" style="font-size:0.8rem;color:var(--text-tertiary);margin-top:2px"></p>
       </div>
       <div class="admin-field">
         <label>リンク先URL</label>
@@ -702,6 +823,10 @@ function showEditModal(id) {
       <div class="admin-field">
         <label>リンクラベル</label>
         <input type="text" id="aLinkLabel" class="admin-input" value="${escapeHtml((p.links && p.links[0]) ? p.links[0].label : '')}">
+      </div>
+      <div class="admin-field" style="flex-direction:row;align-items:center;gap:8px">
+        <input type="checkbox" id="aFeatured" ${p.featured ? 'checked' : ''} style="width:18px;height:18px;accent-color:var(--accent)">
+        <label for="aFeatured" style="margin:0;cursor:pointer">おすすめに固定する</label>
       </div>
       <button onclick="adminSubmitEdit('${id}')" id="submitBtn" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px">保存</button>
       <p id="adminStatus" style="text-align:center;margin-top:12px;font-size:0.9rem;color:var(--text-secondary)"></p>
@@ -715,6 +840,62 @@ function showEditModal(id) {
 function adminLogout() {
   localStorage.removeItem(ADMIN_KEY);
   location.reload();
+}
+
+async function handleFileUpload(fileInput, targetInputId, statusId) {
+  const file = fileInput.files?.[0];
+  if (!file) return;
+  const statusEl = document.getElementById(statusId);
+  const url = await adminUploadFile(file, statusEl);
+  if (url) {
+    document.getElementById(targetInputId).value = url;
+  }
+  fileInput.value = '';
+}
+
+async function adminUploadFile(file, statusEl) {
+  const saved = JSON.parse(localStorage.getItem(ADMIN_KEY) || '{}');
+  const { token, repo } = saved;
+  if (!token || !repo) { alert('未ログインです'); return ''; }
+
+  const maxSize = 100 * 1024 * 1024; // ~100MB (GitHub API limit)
+  if (file.size > maxSize) {
+    if (statusEl) statusEl.textContent = 'ファイルサイズが大きすぎます（上限約100MB）';
+    return '';
+  }
+
+  if (statusEl) statusEl.textContent = 'アップロード中...';
+
+  const ext = file.name.split('.').pop();
+  const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 6)}.${ext}`;
+  const path = `uploads/${filename}`;
+
+  try {
+    const reader = new FileReader();
+    const base64 = await new Promise((resolve, reject) => {
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(file);
+    });
+
+    const putR = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+      method: 'PUT',
+      headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: `upload ${filename}`, content: base64 }),
+    });
+    if (!putR.ok) {
+      const errText = await putR.text();
+      if (statusEl) statusEl.textContent = `アップロード失敗 (${putR.status})`;
+      return '';
+    }
+
+    const rawUrl = `https://raw.githubusercontent.com/${repo}/main/${path}`;
+    if (statusEl) statusEl.textContent = `アップロード完了 ✓`;
+    return rawUrl;
+  } catch (e) {
+    if (statusEl) statusEl.textContent = `エラー: ${e.message}`;
+    return '';
+  }
 }
 
 async function adminCommit(updateFn) {
@@ -774,6 +955,7 @@ async function adminSubmit() {
   const linkUrl = document.getElementById('aLinkUrl').value.trim();
   const linkLabel = document.getElementById('aLinkLabel').value.trim();
   const videoUrl = document.getElementById('aVideoUrl').value.trim();
+  const thumbnail = document.getElementById('aThumb')?.value.trim() || '';
   const tagsRaw = document.getElementById('aAddTags').value.trim();
   if (!title) { alert('タイトルは必須です'); return; }
   const links = (linkUrl && linkLabel) ? [{ label: linkLabel, url: linkUrl }] : [];
@@ -788,7 +970,7 @@ async function adminSubmit() {
         id: newId, title, category: 'video',
         emoji: '🎬', description: title,
         details: '', tags, date: new Date().toISOString().slice(0, 7),
-        videoUrl: videoUrl || undefined, links,
+        videoUrl: videoUrl || undefined, thumbnail: thumbnail || undefined, links,
       });
     });
   } finally {
@@ -808,6 +990,7 @@ async function adminSubmitEdit(id) {
   const linkLabel = document.getElementById('aLinkLabel').value.trim();
   const videoUrl = document.getElementById('aVideoUrl').value.trim();
   const thumbnail = document.getElementById('aThumb').value.trim();
+  const featured = document.getElementById('aFeatured')?.checked || false;
   if (!title || !desc) { alert('タイトルと説明は必須です'); return; }
   const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
   const links = (linkUrl && linkLabel) ? [{ label: linkLabel, url: linkUrl }] : [];
@@ -817,7 +1000,7 @@ async function adminSubmitEdit(id) {
     await adminCommit((currentData) => {
       const idx = currentData.projects.findIndex(p => p.id === id);
       if (idx === -1) return;
-      currentData.projects[idx] = { ...currentData.projects[idx], title, description: desc, emoji, date, tags, details: detail, links, videoUrl: videoUrl || undefined, thumbnail: thumbnail || undefined };
+      currentData.projects[idx] = { ...currentData.projects[idx], title, description: desc, emoji, date, tags, details: detail, links, videoUrl: videoUrl || undefined, thumbnail: thumbnail || undefined, featured };
     });
   } finally {
     _adminSubmitting = false;
