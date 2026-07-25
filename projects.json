@@ -36,7 +36,8 @@
       "tags": [],
       "date": "2026-07",
       "videoUrl": "https://www.youtube.com/watch?v=AfQzohIx6UA",
-      "links": []
+      "links": [],
+      "featured": true
     },
     {
       "id": "video-project-2",
@@ -48,7 +49,8 @@
       "tags": [],
       "date": "2026-07",
       "videoUrl": "https://www.youtube.com/watch?v=AfQzohIx6UA",
-      "links": []
+      "links": [],
+      "featured": true
     }
   ]
 }
