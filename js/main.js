@@ -47,6 +47,26 @@ function wrapFadeIn(html) {
 }
 
 (async function init() {
+  async function router() {
+    const hash = location.hash || '#works';
+    const [page, ...rest] = hash.replace('#', '').split('/');
+    const app = document.getElementById('app');
+    if (!app) return;
+    if (loading) loading.style.display = 'none';
+    switch (page) {
+      case 'works': renderWorks(app); break;
+      case 'work': await renderWorkDetail(app, rest[0]); break;
+      case 'contact': renderContact(app); break;
+      case 'admin': renderAdmin(app); break;
+      default: renderNotFound(app);
+    }
+    updateActiveNav(hash);
+    observeFadeIn(app);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  window.__router = router;
+  window.addEventListener('hashchange', router);
+
   try {
     const res = await fetch('projects.json?_=' + Date.now());
     if (res.ok) { data = await res.json(); }
@@ -58,7 +78,7 @@ function wrapFadeIn(html) {
   const nav = document.getElementById('nav');
   const menuBtn = document.getElementById('menuBtn');
   const loading = document.getElementById('loading');
-
+  if (!nav || !menuBtn) return;
   menuBtn.addEventListener('click', () => nav.classList.toggle('open'));
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.header')) nav.classList.remove('open');
@@ -74,27 +94,6 @@ function wrapFadeIn(html) {
     });
   }
 
-  async function router() {
-    const hash = location.hash || '#works';
-    updateActiveNav(hash);
-    const [page, ...rest] = hash.replace('#', '').split('/');
-    const app = document.getElementById('app');
-
-    if (loading) loading.style.display = 'none';
-
-    switch (page) {
-      case 'works': renderWorks(app); break;
-      case 'work': await renderWorkDetail(app, rest[0]); break;
-      case 'contact': renderContact(app); break;
-      case 'admin': renderAdmin(app); break;
-      default: renderNotFound(app);
-    }
-
-    observeFadeIn(app);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  window.addEventListener('hashchange', router);
   router();
 })();
 
@@ -218,7 +217,8 @@ function enableBatchSelect() {
   function isOnCard(el) { return !!el.closest('.work-card'); }
 
   document.addEventListener('mousedown', (e) => {
-    if (!document.querySelector('.works-grid') || e.button !== 0) return;
+    if (e.button !== 0 || document.querySelector('.modal-overlay')) return;
+    if (!document.querySelector('.works-grid')) return;
     if (e.target.closest('.search-bar-wrap, .search-clear')) return;
     if (isOnCard(e.target) && !e.target.closest('.card-del-btn')) {
       if (document.querySelector('.work-card.selected')) clearSelection();
@@ -269,7 +269,7 @@ function enableBatchSelect() {
   }
 
   document.addEventListener('click', (e) => {
-    if (!document.querySelector('.works-grid')) return;
+    if (document.querySelector('.modal-overlay') || !document.querySelector('.works-grid')) return;
     if (_selectionLocked) { _selectionLocked = false; return; }
     if (!isOnCard(e.target) && !e.target.closest('.card-del-btn') && !e.target.closest('.sel-bar')) {
       clearSelection();
@@ -277,11 +277,12 @@ function enableBatchSelect() {
   });
 
   document.addEventListener('dragstart', (e) => {
-    if (document.querySelector('.works-grid')) e.preventDefault();
+    if (document.querySelector('.works-grid') && !document.querySelector('.modal-overlay')) e.preventDefault();
   });
 
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Delete' && e.key !== 'Backspace') return;
+    if (document.querySelector('.modal-overlay')) return;
     const sel = document.querySelectorAll('.work-card.selected');
     if (!sel.length) return;
     e.preventDefault();
@@ -353,7 +354,7 @@ function projectCard(p) {
     <a href="#work/${encodeURIComponent(p.id)}" class="work-card">
       <div class="work-card-thumb">
         ${thumb || `<span class="emoji">${p.emoji || '🎬'}</span>`}
-        ${isAdmin ? `<button class="card-del-btn" onclick="event.preventDefault();event.stopPropagation();if(confirm('「${escapeHtml(p.title)}」を削除しますか？'))adminDeleteProject('${p.id}')" title="削除">🗑</button>` : ''}
+        ${isAdmin ? `<button class="card-del-btn" data-id="${escapeHtml(p.id)}" title="削除">🗑</button>` : ''}
       </div>
       <div class="work-card-body">
         <div class="work-card-cat">${escapeHtml(p.category)}</div>
@@ -705,7 +706,7 @@ function showEditModal(id) {
       <button onclick="adminSubmitEdit('${id}')" id="submitBtn" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px">保存</button>
       <p id="adminStatus" style="text-align:center;margin-top:12px;font-size:0.9rem;color:var(--text-secondary)"></p>
       <div style="text-align:center;margin-top:16px;padding-top:16px;border-top:1px solid rgba(0,0,0,0.06)">
-        <button onclick="adminDeleteProject('${id}')" style="background:none;border:none;color:#e53e3e;cursor:pointer;font-size:0.85rem;padding:8px">この作品を削除する</button>
+        <button onclick="adminDeleteProject('${escapeHtml(id)}')" style="background:none;border:none;color:#e53e3e;cursor:pointer;font-size:0.85rem;padding:8px">この作品を削除する</button>
       </div>
     </div>
   `);
@@ -730,9 +731,9 @@ async function adminCommit(updateFn) {
       const getR = await fetch(`https://api.github.com/repos/${repo}/contents/projects.json`, {
         headers: { Authorization: `token ${token}` },
       });
-      if (!getR.ok) throw new Error('Fetch failed');
+      if (!getR.ok) throw new Error(`FETCH ${getR.status}`);
       const file = await getR.json();
-      const raw = atob(file.content.replace(/\n/g, ''));
+      const raw = atob(file.content.replace(/\s/g, ''));
       const bytes = new Uint8Array(raw.length);
       for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
       const currentData = JSON.parse(new TextDecoder().decode(bytes));
@@ -746,11 +747,11 @@ async function adminCommit(updateFn) {
         body: JSON.stringify({ message: 'update projects.json', content: newContent, sha: file.sha }),
       });
       if (putR.status === 409) { lastError = 'Conflict'; continue; }
-      if (!putR.ok) throw new Error('Commit failed');
+      if (!putR.ok) throw new Error(`PUT ${putR.status}`);
 
       data = currentData;
       closeModal();
-      router();
+      if (window.__router) window.__router();
       if (btn) { btn.disabled = false; btn.style.cursor = ''; }
       return;
     } catch (e) {
@@ -760,7 +761,9 @@ async function adminCommit(updateFn) {
     }
   }
   if (btn) { btn.disabled = false; btn.style.cursor = ''; }
-  if (status) { status.textContent = '競合が発生しました。ページを再読み込みしてください。'; status.style.color = '#e53e3e'; }
+  const detail = lastError ? ` (${lastError})` : '';
+  if (status) { status.textContent = `保存に失敗しました。設定を確認してください。${detail}`; status.style.color = '#e53e3e'; }
+  else { alert(`保存に失敗しました。設定を確認してください。\n${detail}`); }
 }
 
 let _adminSubmitting = false;
@@ -821,10 +824,48 @@ async function adminSubmitEdit(id) {
   }
 }
 
-function adminDeleteProject(id) {
-  if (!confirm('この作品を削除しますか？')) return;
-  adminCommit((currentData) => {
+async function adminDeleteProject(id) {
+  const p = data?.projects?.find(proj => proj.id === id);
+  if (!confirm(`「${p?.title || id}」を削除しますか？`)) return;
+  const saved = JSON.parse(localStorage.getItem(ADMIN_KEY) || '{}');
+  const { token, repo } = saved;
+  if (!token || !repo) { alert('未ログインです'); return; }
+
+  try {
+    const getR = await fetch(`https://api.github.com/repos/${repo}/contents/projects.json`, {
+      headers: { Authorization: `token ${token}` },
+    });
+    if (!getR.ok) { alert(`GitHub読み取り失敗: ${getR.status}`); return; }
+    const file = await getR.json();
+    const raw = atob(file.content.replace(/\s/g, ''));
+    const bytes = new Uint8Array(raw.length);
+    for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
+    const currentData = JSON.parse(new TextDecoder().decode(bytes));
+
     currentData.projects = currentData.projects.filter(p => p.id !== id);
-    location.hash = '#works';
-  });
+
+    const newContent = utf8ToBase64(JSON.stringify(currentData, null, 2));
+    const putR = await fetch(`https://api.github.com/repos/${repo}/contents/projects.json`, {
+      method: 'PUT',
+      headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: 'delete project', content: newContent, sha: file.sha }),
+    });
+    if (putR.status === 409) { alert('競合が発生しました。ページを再読み込みしてください。'); return; }
+    if (!putR.ok) { alert(`GitHub書き込み失敗: ${putR.status}`); return; }
+
+    data = currentData;
+    closeModal();
+    if (window.__router) window.__router();
+  } catch (e) {
+    alert(`エラー: ${e.message}`);
+  }
 }
+
+// Card delete button delegation
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.card-del-btn');
+  if (!btn) return;
+  e.preventDefault();
+  const id = btn.getAttribute('data-id');
+  if (id) adminDeleteProject(id);
+});
