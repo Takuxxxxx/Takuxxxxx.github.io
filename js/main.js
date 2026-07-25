@@ -219,7 +219,7 @@ function enableBatchSelect() {
   document.addEventListener('mousedown', (e) => {
     if (e.button !== 0 || document.querySelector('.modal-overlay')) return;
     if (!document.querySelector('.works-grid')) return;
-    if (e.target.closest('.search-bar-wrap, .search-clear')) return;
+    if (e.target.closest('.search-bar-wrap, .search-clear, .sel-bar')) return;
     if (isOnCard(e.target) && !e.target.closest('.card-del-btn')) {
       if (document.querySelector('.work-card.selected')) clearSelection();
       return;
