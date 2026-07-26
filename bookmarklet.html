@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bookmarklet - Portfolio</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .bookmarklet-page { padding: 80px 24px 40px; max-width: 800px; margin: 0 auto; }
+    .bookmarklet-page h1 { font-size: 2.4rem; font-weight: 700; margin-bottom: 8px; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .bookmarklet-page h2 { font-size: 1.4rem; font-weight: 600; margin: 40px 0 16px; color: var(--text); }
+    .bookmarklet-page p, .bookmarklet-page li { color: var(--text-secondary); line-height: 1.8; font-size: 0.95rem; }
+    .bookmarklet-page ol, .bookmarklet-page ul { padding-left: 20px; }
+    .bookmarklet-page li { margin-bottom: 4px; }
+    .bookmarklet-link-wrap {
+      display: flex; justify-content: center; margin: 40px 0;
+    }
+    .bookmarklet-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 16px 36px; border-radius: var(--radius-full);
+      font-size: 1.1rem; font-weight: 700;
+      background: var(--accent-gradient); color: #fff;
+      box-shadow: 0 4px 20px rgba(248,186,42,0.3);
+      cursor: grab; text-decoration: none;
+      transition: transform 0.3s var(--ease-spring), box-shadow 0.3s;
+      user-select: none;
+    }
+    .bookmarklet-link:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 8px 32px rgba(248,186,42,0.4);
+    }
+    .bookmarklet-link:active { cursor: grabbing; }
+    .bookmarklet-note {
+      background: var(--glass); border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md); padding: 20px 24px;
+      margin: 24px 0; backdrop-filter: blur(12px);
+    }
+    .bookmarklet-note strong { color: var(--text); }
+    .bookmarklet-note code {
+      background: var(--input-bg); padding: 2px 6px; border-radius: 6px;
+      font-size: 0.85rem; color: var(--accent); word-break: break-all;
+    }
+    .bookmarklet-source {
+      background: var(--bg-elevated); border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md); padding: 20px 24px;
+      font-size: 0.8rem; line-height: 1.6; overflow-x: auto;
+      white-space: pre-wrap; word-break: break-all;
+      color: var(--text-secondary);
+    }
+    .bookmarklet-warn {
+      border-left: 3px solid #e53e3e; padding: 12px 16px;
+      background: rgba(229,62,62,0.06); border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin: 16px 0; font-size: 0.9rem; color: var(--text-secondary);
+    }
+    .back-link { display: inline-block; margin-top: 40px; color: var(--text-secondary); font-size: 0.9rem; }
+    .back-link:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <a href="/" class="logo">Portfolio</a>
+    </div>
+  </header>
+
+  <main class="bookmarklet-page">
+    <h1>⭐ Bookmarklet</h1>
+    <p>YouTubeの動画再生ページからワンクリックでポートフォリオに作品を追加できるブックマークレットです。</p>
+
+    <div class="bookmarklet-link-wrap">
+      <a href="javascript:(async%20function()%20%7Bfunction%20utf8ToBase64(str)%20%7Bvar%20bytes%20=%20new%20TextEncoder().encode(str);var%20bin%20=%20'';for%20(var%20i%20=%200;%20i%20%3C%20bytes.length;%20i++)%20bin%20+=%20String.fromCharCode(bytes%5Bi%5D);return%20btoa(bin);%7Dfunction%20getNextId(projects)%20%7Bvar%20max%20=%200;for%20(var%20i%20=%200;%20i%20%3C%20projects.length;%20i++)%20%7Bvar%20n%20=%20parseInt(projects%5Bi%5D.id.replace('video-project-',%20''));if%20(n%20%3E%20max)%20max%20=%20n;%7Dreturn%20'video-project-'%20+%20(max%20+%201);%7Dvar%20host%20=%20location.hostname;if%20(host%20!==%20'www.youtube.com'%20&&%20host%20!==%20'youtube.com'%20&&%20host%20!==%20'youtu.be')%20%7Balert('YouTube%E3%81%AE%E5%8B%95%E7%94%BB%E3%83%9A%E3%83%BC%E3%82%B8%E3%81%A7%E5%AE%9F%E8%A1%8C%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84');return;%7Dvar%20videoId%20=%20'';var%20m%20=%20location.pathname.match(/%5E%5C/(?:watch%5C?.*v=%7Cembed%5C/%7Cv%5C/)?(%5Ba-zA-Z0-9_-%5D%7B11%7D)/);if%20(!m)%20m%20=%20location.search.match(/%5B?&%5Dv=(%5Ba-zA-Z0-9_-%5D%7B11%7D)/);if%20(m)%20videoId%20=%20m%5B1%5D;if%20(host%20===%20'youtu.be')%20%7Bvar%20ym%20=%20location.pathname.match(/%5E%5C/(%5Ba-zA-Z0-9_-%5D%7B11%7D)/);if%20(ym)%20videoId%20=%20ym%5B1%5D;%7Dif%20(!videoId)%20%7Balert('%E5%8B%95%E7%94%BBID%E3%81%8C%E8%A6%8B%E3%81%A4%E3%81%8B%E3%82%8A%E3%81%BE%E3%81%9B%E3%82%93%E3%81%A7%E3%81%97%E3%81%9F');return;%7Dvar%20cleanUrl%20=%20'https://www.youtube.com/watch?v='%20+%20videoId;var%20thumbUrl%20=%20'https://img.youtube.com/vi/'%20+%20videoId%20+%20'/maxresdefault.jpg';var%20rawTitle%20=%20document.title.replace(/%20-%20YouTube$/,%20'').trim();var%20title%20=%20prompt('%E3%83%9D%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%AA%E3%82%AA%E3%81%AB%E8%BF%BD%E5%8A%A0%E3%81%99%E3%82%8B%E3%82%BF%E3%82%A4%E3%83%88%E3%83%AB%E3%82%92%E7%A2%BA%E8%AA%8D%E3%83%BB%E7%B7%A8%E9%9B%86%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%EF%BC%9A',%20rawTitle);if%20(title%20===%20null)%20return;title%20=%20title.trim();if%20(!title)%20%7Balert('%E3%82%BF%E3%82%A4%E3%83%88%E3%83%AB%E3%81%8C%E7%A9%BA%E3%81%AE%E3%81%9F%E3%82%81%E4%B8%AD%E6%96%AD%E3%81%97%E3%81%BE%E3%81%97%E3%81%9F');return;%7Dif%20(!confirm('%E3%80%8C'%20+%20title%20+%20'%E3%80%8D%20%E3%82%92%E3%83%9D%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%AA%E3%82%AA%E3%81%AB%E8%BF%BD%E5%8A%A0%E3%81%97%E3%81%BE%E3%81%99%E3%81%8B%EF%BC%9F'))%20return;var%20STORAGE_KEY%20=%20'portfolio_bookmarklet_admin';var%20saved;try%20%7Bsaved%20=%20JSON.parse(localStorage.getItem(STORAGE_KEY));%7Dcatch%20(e)%20%7B%7Dvar%20token,%20repo;if%20(saved%20&&%20saved.token%20&&%20saved.repo)%20%7Btoken%20=%20saved.token;repo%20=%20saved.repo;%7Delse%20%7Brepo%20=%20prompt('GitHub%E3%83%AA%E3%83%9D%E3%82%B8%E3%83%88%E3%83%AA%E3%82%92%E5%85%A5%E5%8A%9B%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%EF%BC%88%E4%BE%8B:%20owner/repo%EF%BC%89%EF%BC%9A');if%20(!repo)%20%7Balert('%E4%B8%AD%E6%96%AD%E3%81%97%E3%81%BE%E3%81%97%E3%81%9F');return;%7Dtoken%20=%20prompt('GitHub%20Personal%20Access%20Token%E3%82%92%E5%85%A5%E5%8A%9B%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%EF%BC%9A');if%20(!token)%20%7Balert('%E4%B8%AD%E6%96%AD%E3%81%97%E3%81%BE%E3%81%97%E3%81%9F');return;%7Dtry%20%7BlocalStorage.setItem(STORAGE_KEY,%20JSON.stringify(%7B%20token:%20token,%20repo:%20repo%20%7D));%7Dcatch%20(e)%20%7B%7D%7Dvar%20today%20=%20new%20Date();var%20dateStr%20=%20today.getFullYear()%20+%20'-'%20+%20String(today.getMonth()%20+%201).padStart(2,%20'0');var%20newProject%20=%20%7Bid:%20'',title:%20title,category:%20'video',emoji:%20'%F0%9F%8C%AC',description:%20title,details:%20'',tags:%20%5B%5D,date:%20dateStr,videoUrl:%20cleanUrl,thumbnail:%20thumbUrl,links:%20%5B%7B%20label:%20'YouTube%E3%81%A7%E8%A6%8B%E3%82%8B',%20url:%20cleanUrl%20%7D%5D%7D;var%20lastError;for%20(var%20attempt%20=%200;%20attempt%20%3C%203;%20attempt++)%20%7Btry%20%7Bvar%20getR%20=%20await%20fetch('https://api.github.com/repos/'%20+%20repo%20+%20'/contents/projects.json',%20%7Bheaders:%20%7B%20Authorization:%20'token%20'%20+%20token%20%7D%7D);if%20(!getR.ok)%20throw%20new%20Error('FETCH%20'%20+%20getR.status);var%20file%20=%20await%20getR.json();var%20raw%20=%20atob(file.content.replace(/%5Cs/g,%20''));var%20bytes%20=%20new%20Uint8Array(raw.length);for%20(var%20i%20=%200;%20i%20%3C%20raw.length;%20i++)%20bytes%5Bi%5D%20=%20raw.charCodeAt(i);var%20currentData%20=%20JSON.parse(new%20TextDecoder().decode(bytes));newProject.id%20=%20getNextId(currentData.projects);currentData.projects.push(newProject);var%20newContent%20=%20utf8ToBase64(JSON.stringify(currentData,%20null,%202));var%20putR%20=%20await%20fetch('https://api.github.com/repos/'%20+%20repo%20+%20'/contents/projects.json',%20%7Bmethod:%20'PUT',headers:%20%7B%20Authorization:%20'token%20'%20+%20token,%20'Content-Type':%20'application/json'%20%7D,body:%20JSON.stringify(%7B%20message:%20'add%20'%20+%20title%20+%20'%20via%20bookmarklet',%20content:%20newContent,%20sha:%20file.sha%20%7D)%7D);if%20(putR.status%20===%20409)%20%7BlastError%20=%20'Conflict';continue;%7Dif%20(!putR.ok)%20throw%20new%20Error('PUT%20'%20+%20putR.status);alert('%E3%80%8C'%20+%20title%20+%20'%E3%80%8D%20%E3%82%92%E8%BF%BD%E5%8A%A0%E3%81%97%E3%81%BE%E3%81%97%E3%81%9F%EF%BC%81');return;%7Dcatch%20(e)%20%7BlastError%20=%20e.message;if%20(attempt%20%3C%202)%20continue;break;%7D%7Dalert('%E4%BF%9D%E5%AD%98%E3%81%AB%E5%A4%B1%E6%95%97%E3%81%97%E3%81%BE%E3%81%97%E3%81%9F%E3%80%82%E3%83%88%E3%83%BC%E3%82%AF%E3%83%B3%E3%83%BB%E3%83%AA%E3%83%9D%E3%82%B8%E3%83%88%E3%83%AA%E3%81%AE%E8%A8%AD%E5%AE%9A%E3%82%92%E7%A2%BA%E8%AA%8D%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82%5Cn'%20+%20(lastError%20%7C%7C%20''));%7D)()" class="bookmarklet-link">⭐ Portfolioに追加</a>
+    </div>
+    <p style="text-align:center;color:var(--text-tertiary);font-size:0.9rem">↑ このリンクをブックマークバーへドラッグ＆ドロップしてください</p>
+
+    <h2>使い方</h2>
+    <ol>
+      <li>上のリンクをブラウザのブックマークバーにドラッグして登録</li>
+      <li>YouTubeの動画再生ページを開く</li>
+      <li>登録したブックマークレットをクリック</li>
+      <li>初回のみリポジトリ（<strong>owner/repo</strong>）と <strong>GitHub Personal Access Token</strong> を入力</li>
+      <li>タイトルを確認・編集してOK → 確認ダイアログでOK</li>
+      <li>自動でGitHubに保存され、「追加しました！」と表示される</li>
+    </ol>
+
+    <h2>注意事項</h2>
+    <div class="bookmarklet-warn">
+      <strong>トークンの取り扱いについて</strong><br>
+      入力したトークンは <strong>youtube.com</strong> の localStorage に保存されます。<br>
+      リポジトリへの書き込み権限のみに絞った fine-grained token の使用を推奨します。<br>
+      GitHub 設定 → Developer settings → Personal access tokens → Fine-grained tokens で作成してください。
+    </div>
+
+    <div class="bookmarklet-note">
+      <strong>トークン・リポジトリを再設定したい場合</strong><br>
+      以下のいずれかの方法で localStorage を削除してから、再度ブックマークレットを実行してください。<br><br>
+      <strong>A.</strong> YouTube のページで DevTools (F12) を開き、Console で以下を実行:<br>
+      <code>localStorage.removeItem('portfolio_bookmarklet_admin')</code><br><br>
+      <strong>B.</strong> ブラウザのサイト設定から youtube.com の localStorage を消去
+    </div>
+
+    <h2>ソースコード</h2>
+    <p>メンテナンス用の readable なソースコードです（<a href="bookmarklet/bookmarklet.js" target="_blank">bookmarklet/bookmarklet.js</a>）。</p>
+    <div class="bookmarklet-source">(async function() {
+  // ---- helpers ----
+  function utf8ToBase64(str) {
+    var bytes = new TextEncoder().encode(str);
+    var bin = '';
+    for (var i = 0; i &lt; bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+    return btoa(bin);
+  }
+
+  function getNextId(projects) {
+    var max = 0;
+    for (var i = 0; i &lt; projects.length; i++) {
+      var n = parseInt(projects[i].id.replace('video-project-', ''));
+      if (n &gt; max) max = n;
+    }
+    return 'video-project-' + (max + 1);
+  }
+
+  // ---- 1. check we are on a YouTube video page ----
+  var host = location.hostname;
+  if (host !== 'www.youtube.com' && host !== 'youtube.com' && host !== 'youtu.be') {
+    alert('YouTubeの動画ページで実行してください');
+    return;
+  }
+
+  // extract video id
+  var videoId = '';
+  var m = location.pathname.match(/^\/(?:watch\?.*v=|embed\/|v\/)?([a-zA-Z0-9_-]{11})/);
+  if (!m) m = location.search.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+  if (m) videoId = m[1];
+  if (host === 'youtu.be') {
+    var ym = location.pathname.match(/^\/([a-zA-Z0-9_-]{11})/);
+    if (ym) videoId = ym[1];
+  }
+  if (!videoId) {
+    alert('動画IDが見つかりませんでした');
+    return;
+  }
+
+  // clean URL: keep only v= param
+  var cleanUrl = 'https://www.youtube.com/watch?v=' + videoId;
+
+  // thumbnail
+  var thumbUrl = 'https://img.youtube.com/vi/' + videoId + '/maxresdefault.jpg';
+
+  // ---- 2. get title ----
+  var rawTitle = document.title.replace(/ - YouTube$/, '').trim();
+  var title = prompt('ポートフォリオに追加するタイトルを確認・編集してください：', rawTitle);
+  if (title === null) return; // cancelled
+  title = title.trim();
+  if (!title) {
+    alert('タイトルが空のため中断しました');
+    return;
+  }
+
+  // ---- 3. confirm ----
+  if (!confirm('「' + title + '」 をポートフォリオに追加しますか？')) return;
+
+  // ---- 4. load credentials ----
+  var STORAGE_KEY = 'portfolio_bookmarklet_admin';
+  var saved;
+  try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch (e) {}
+  var token, repo;
+  if (saved && saved.token && saved.repo) {
+    token = saved.token;
+    repo = saved.repo;
+  } else {
+    repo = prompt('GitHubリポジトリを入力してください（例: owner/repo）：');
+    if (!repo) { alert('中断しました'); return; }
+    token = prompt('GitHub Personal Access Tokenを入力してください：');
+    if (!token) { alert('中断しました'); return; }
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ token: token, repo: repo })); } catch (e) {}
+  }
+
+  // ---- 5. GitHub API: fetch -> add -> save ----
+  var today = new Date();
+  var dateStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0');
+
+  var newProject = {
+    id: '',
+    title: title,
+    category: 'video',
+    emoji: '🎬',
+    description: title,
+    details: '',
+    tags: [],
+    date: dateStr,
+    videoUrl: cleanUrl,
+    thumbnail: thumbUrl,
+    links: [
+      { label: 'YouTubeで見る', url: cleanUrl }
+    ]
+  };
+
+  var lastError;
+  for (var attempt = 0; attempt &lt; 3; attempt++) {
+    try {
+      var getR = await fetch('https://api.github.com/repos/' + repo + '/contents/projects.json', {
+        headers: { Authorization: 'token ' + token }
+      });
+      if (!getR.ok) throw new Error('FETCH ' + getR.status);
+      var file = await getR.json();
+      var raw = atob(file.content.replace(/\s/g, ''));
+      var bytes = new Uint8Array(raw.length);
+      for (var i = 0; i &lt; raw.length; i++) bytes[i] = raw.charCodeAt(i);
+      var currentData = JSON.parse(new TextDecoder().decode(bytes));
+
+      newProject.id = getNextId(currentData.projects);
+      currentData.projects.push(newProject);
+
+      var newContent = utf8ToBase64(JSON.stringify(currentData, null, 2));
+      var putR = await fetch('https://api.github.com/repos/' + repo + '/contents/projects.json', {
+        method: 'PUT',
+        headers: { Authorization: 'token ' + token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: 'add ' + title + ' via bookmarklet', content: newContent, sha: file.sha })
+      });
+      if (putR.status === 409) { lastError = 'Conflict'; continue; }
+      if (!putR.ok) throw new Error('PUT ' + putR.status);
+
+      alert('「' + title + '」 を追加しました！');
+      return;
+    } catch (e) {
+      lastError = e.message;
+      if (attempt &lt; 2) continue;
+      break;
+    }
+  }
+  alert('保存に失敗しました。トークン・リポジトリの設定を確認してください。\n' + (lastError || ''));
+})();</div>
+
+    <a href="/" class="back-link">← ポートフォリオに戻る</a>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2026 Portfolio</p>
+  </footer>
+</body>
+</html>
