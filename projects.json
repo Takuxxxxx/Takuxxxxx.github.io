@@ -23,6 +23,18 @@
       "date": "2026-07",
       "videoUrl": "https://www.youtube.com/watch?v=AfQzohIx6UA",
       "links": []
+    },
+    {
+      "id": "video-project-2",
+      "title": "Raindance",
+      "category": "video",
+      "emoji": "🎬",
+      "description": "Raindance",
+      "details": "",
+      "tags": [],
+      "date": "2026-07",
+      "videoUrl": "https://www.youtube.com/watch?v=mQEU6vvtGQ4",
+      "links": []
     }
   ],
   "theme": {
