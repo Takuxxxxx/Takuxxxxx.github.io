@@ -521,6 +521,43 @@ html[data-theme="dark"] .work-card.selected {
 .not-found h2 { font-size: 3rem; font-weight: 800; margin-bottom: 8px; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 .not-found p { color: var(--text-secondary); margin-bottom: 24px; }
 
+/* Bookmarklet */
+.bookmarklet-page { max-width: 800px; margin: 0 auto; }
+.bookmarklet-page h2 { font-size: 1.4rem; font-weight: 600; margin: 40px 0 16px; color: var(--text); }
+.bookmarklet-page ol { padding-left: 20px; }
+.bookmarklet-page li { color: var(--text-secondary); line-height: 1.8; font-size: 0.95rem; margin-bottom: 4px; }
+.bookmarklet-link-wrap { display: flex; justify-content: center; margin: 40px 0; }
+.bookmarklet-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 16px 36px; border-radius: var(--radius-full);
+  font-size: 1.1rem; font-weight: 700;
+  background: var(--accent-gradient); color: #fff;
+  box-shadow: 0 4px 20px rgba(248,186,42,0.3);
+  cursor: grab; text-decoration: none;
+  transition: transform 0.3s var(--ease-spring), box-shadow 0.3s;
+  user-select: none;
+}
+.bookmarklet-link:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 32px rgba(248,186,42,0.4);
+}
+.bookmarklet-link:active { cursor: grabbing; }
+.bookmarklet-note {
+  background: var(--glass); border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md); padding: 20px 24px;
+  margin: 24px 0; backdrop-filter: blur(12px);
+}
+.bookmarklet-note strong { color: var(--text); }
+.bookmarklet-note code {
+  background: var(--input-bg); padding: 2px 6px; border-radius: 6px;
+  font-size: 0.85rem; color: var(--accent); word-break: break-all;
+}
+.bookmarklet-warn {
+  border-left: 3px solid #e53e3e; padding: 12px 16px;
+  background: rgba(229,62,62,0.06); border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin: 16px 0; font-size: 0.9rem; color: var(--text-secondary);
+}
+
 /* Admin */
 .admin-form {
   background: var(--glass);

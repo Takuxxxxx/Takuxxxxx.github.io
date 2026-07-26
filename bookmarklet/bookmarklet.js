@@ -46,7 +46,7 @@
   // ---- 2. get title ----
   var rawTitle = document.title.replace(/ - YouTube$/, '').trim();
   var title = prompt('ポートフォリオに追加するタイトルを確認・編集してください：', rawTitle);
-  if (title === null) return; // cancelled
+  if (title === null) return; /* cancelled */
   title = title.trim();
   if (!title) {
     alert('タイトルが空のため中断しました');
