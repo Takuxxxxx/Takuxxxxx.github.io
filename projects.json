@@ -71,6 +71,18 @@
       "date": "2026-07",
       "videoUrl": "https://www.youtube.com/watch?v=SnlsqG67ewA&t=10s",
       "links": []
+    },
+    {
+      "id": "video-project-6",
+      "title": "one call",
+      "category": "video",
+      "emoji": "🎬",
+      "description": "one call",
+      "details": "",
+      "tags": [],
+      "date": "2026-07",
+      "videoUrl": "https://www.youtube.com/watch?v=7i6AmQPtaU0",
+      "links": []
     }
   ],
   "theme": {
