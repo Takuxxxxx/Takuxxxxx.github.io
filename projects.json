@@ -47,6 +47,18 @@
       "date": "2026-07",
       "videoUrl": "https://www.youtube.com/watch?v=zan4sIKqA7c",
       "links": []
+    },
+    {
+      "id": "video-project-4",
+      "title": "High hopes",
+      "category": "video",
+      "emoji": "🎬",
+      "description": "High hopes",
+      "details": "",
+      "tags": [],
+      "date": "2026-07",
+      "videoUrl": "https://www.youtube.com/watch?v=IQ1phvBapJ0",
+      "links": []
     }
   ],
   "theme": {
