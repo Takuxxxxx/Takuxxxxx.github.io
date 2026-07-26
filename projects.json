@@ -35,6 +35,18 @@
       "date": "2026-07",
       "videoUrl": "https://www.youtube.com/watch?v=mQEU6vvtGQ4",
       "links": []
+    },
+    {
+      "id": "video-project-3",
+      "title": "Sweet but psycho",
+      "category": "video",
+      "emoji": "🎬",
+      "description": "Sweet but psycho",
+      "details": "",
+      "tags": [],
+      "date": "2026-07",
+      "videoUrl": "https://www.youtube.com/watch?v=zan4sIKqA7c",
+      "links": []
     }
   ],
   "theme": {
