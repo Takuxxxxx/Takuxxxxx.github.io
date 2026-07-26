@@ -414,13 +414,20 @@ function enableDragReorder() {
     const targetId = targetCard?.getAttribute('href')?.replace('#work/', '');
 
     if (targetId && targetId !== draggedId) {
-      const projects = data.projects;
-      const fromIdx = projects.findIndex(p => p.id === draggedId);
-      const toIdx = projects.findIndex(p => p.id === targetId);
+      // Use display-ordered list (featured first, matching DOM order)
+      const sorted = [...data.projects].sort((a, b) => {
+        if (a.featured && !b.featured) return -1;
+        if (!a.featured && b.featured) return 1;
+        return 0;
+      });
+
+      const fromIdx = sorted.findIndex(p => p.id === draggedId);
+      const toIdx = sorted.findIndex(p => p.id === targetId);
+
       if (fromIdx !== -1 && toIdx !== -1) {
-        const [moved] = projects.splice(fromIdx, 1);
+        const [moved] = sorted.splice(fromIdx, 1);
         const adjustedTo = toIdx > fromIdx ? toIdx - 1 : toIdx;
-        projects.splice(adjustedTo, 0, moved);
+        sorted.splice(adjustedTo, 0, moved);
 
         let loadingEl = document.getElementById('dragLoading');
         if (!loadingEl) {
@@ -435,7 +442,7 @@ function enableDragReorder() {
         (async () => {
           try {
             await adminCommit((currentData) => {
-              const orderMap = new Map(data.projects.map((p, i) => [p.id, i]));
+              const orderMap = new Map(sorted.map((p, i) => [p.id, i]));
               currentData.projects.sort((a, b) => (orderMap.get(a.id) || 0) - (orderMap.get(b.id) || 0));
             });
           } finally {
@@ -1128,6 +1135,18 @@ async function adminUploadFile(file, statusEl) {
   const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 6)}.${ext}`;
   const path = `uploads/${filename}`;
 
+  // Get default branch dynamically
+  let branch = 'main';
+  try {
+    const repoR = await fetch(`https://api.github.com/repos/${repo}`, {
+      headers: { Authorization: `token ${token}` },
+    });
+    if (repoR.ok) {
+      const repoData = await repoR.json();
+      branch = repoData.default_branch;
+    }
+  } catch {}
+
   try {
     const reader = new FileReader();
     const base64 = await new Promise((resolve, reject) => {
@@ -1147,7 +1166,7 @@ async function adminUploadFile(file, statusEl) {
       return '';
     }
 
-    const rawUrl = `https://raw.githubusercontent.com/${repo}/main/${path}`;
+    const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/${path}`;
     if (statusEl) statusEl.textContent = `アップロード完了 ✓`;
     return rawUrl;
   } catch (e) {
