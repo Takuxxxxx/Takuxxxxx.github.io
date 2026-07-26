@@ -11,7 +11,20 @@
     "tiktok": "https://www.tiktok.com/@t4ku_vfx",
     "github": ""
   },
-  "projects": [],
+  "projects": [
+    {
+      "id": "video-project-1",
+      "title": "Getaway Car",
+      "category": "video",
+      "emoji": "🎬",
+      "description": "Getaway Car",
+      "details": "",
+      "tags": [],
+      "date": "2026-07",
+      "videoUrl": "https://www.youtube.com/watch?v=AfQzohIx6UA",
+      "links": []
+    }
+  ],
   "theme": {
     "bg": "#d60015",
     "accent": "#2bff00",
