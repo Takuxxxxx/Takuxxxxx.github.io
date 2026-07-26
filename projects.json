@@ -83,6 +83,18 @@
       "date": "2026-07",
       "videoUrl": "https://www.youtube.com/watch?v=7i6AmQPtaU0",
       "links": []
+    },
+    {
+      "id": "video-project-7",
+      "title": "billie jean",
+      "category": "video",
+      "emoji": "🎬",
+      "description": "billie jean",
+      "details": "",
+      "tags": [],
+      "date": "2026-07",
+      "videoUrl": "https://www.youtube.com/watch?v=BN3dd8EsnGw",
+      "links": []
     }
   ],
   "theme": {
