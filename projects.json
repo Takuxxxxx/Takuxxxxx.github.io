@@ -59,6 +59,18 @@
       "date": "2026-07",
       "videoUrl": "https://www.youtube.com/watch?v=IQ1phvBapJ0",
       "links": []
+    },
+    {
+      "id": "video-project-5",
+      "title": "Baby I'm back",
+      "category": "video",
+      "emoji": "🎬",
+      "description": "Baby I'm back",
+      "details": "",
+      "tags": [],
+      "date": "2026-07",
+      "videoUrl": "https://www.youtube.com/watch?v=SnlsqG67ewA&t=10s",
+      "links": []
     }
   ],
   "theme": {
