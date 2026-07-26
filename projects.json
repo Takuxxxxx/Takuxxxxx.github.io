@@ -11,21 +11,7 @@
     "tiktok": "https://www.tiktok.com/@t4ku_vfx",
     "github": ""
   },
-  "projects": [
-    {
-      "id": "video-project-2",
-      "title": "あああ",
-      "category": "video",
-      "emoji": "🎬",
-      "description": "あああ",
-      "details": "",
-      "tags": [],
-      "date": "2026-07",
-      "videoUrl": "https://www.youtube.com/watch?v=AfQzohIx6UA",
-      "links": [],
-      "featured": false
-    }
-  ],
+  "projects": [],
   "theme": {
     "bg": "#d60015",
     "accent": "#2bff00",
