@@ -107,6 +107,18 @@
       "date": "2026-07",
       "videoUrl": "https://www.youtube.com/watch?v=r18wBalvpso",
       "links": []
+    },
+    {
+      "id": "video-project-9",
+      "title": "Dangerously",
+      "category": "video",
+      "emoji": "🎬",
+      "description": "Dangerously",
+      "details": "",
+      "tags": [],
+      "date": "2026-07",
+      "videoUrl": "https://www.youtube.com/watch?v=Sw_i1G4N9dg",
+      "links": []
     }
   ],
   "theme": {
