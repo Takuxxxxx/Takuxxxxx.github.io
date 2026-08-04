@@ -119,6 +119,17 @@
       "date": "2026-07",
       "videoUrl": "https://www.youtube.com/watch?v=Sw_i1G4N9dg",
       "links": []
+    },
+    {
+      "id": "video-project-10",
+      "title": "aa",
+      "category": "video",
+      "emoji": "🎬",
+      "description": "aa",
+      "details": "",
+      "tags": [],
+      "date": "2026-08",
+      "links": []
     }
   ],
   "theme": {
