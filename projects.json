@@ -126,10 +126,12 @@
       "category": "video",
       "emoji": "🎬",
       "description": "aa",
-      "details": "",
+      "details": "aa",
       "tags": [],
       "date": "2026-08",
-      "links": []
+      "links": [],
+      "videoUrl": "https://x.com/qlivyy/status/2079219783627944035",
+      "featured": false
     }
   ],
   "theme": {
